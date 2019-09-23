@@ -1,0 +1,102 @@
+// Import Fuse core library
+@import "@fuse/scss/core";
+
+// Import app.theme.scss
+@import "app/app.theme";
+
+.success {
+  background-color: #26b329 !important;
+}
+
+.danger {
+  background-color: #d6201d !important;
+}
+
+.warning {
+  background-color: #ee9a2c !important;
+}
+
+.info {
+  background-color: #1992ce !important;
+}
+.ProgressBarPostion {
+  position: absolute !important;
+  top: 43%;
+  z-index: 1;
+  left: 55%;
+}
+
+.mat-step-header .mat-step-icon {
+  background-color: lightblue !important;
+  color: green !important;
+}
+
+.mat-horizontal-stepper-header {
+  pointer-events: none !important;
+}
+.mat-dialog-container {
+  padding: 0px !important;
+}
+.cdk-global-scrollblock {
+  overflow-y: hidden !important;
+}
+.notificationMenuItem {
+  overflow: visible !important;
+  white-space: normal !important;
+  height: auto !important;
+  line-height: 26px !important;
+  font-size: 15px !important;
+  padding-top: 10px !important;
+}
+.mat-form-field-appearance-outline {
+  .mat-form-field-outline {
+    color: rgba(0, 0, 0, 0.5) !important;
+  }
+}
+.mat-form-field-appearance-outline .mat-form-field-outline {
+  top: 0.4em !important;
+}
+.mat-form-field-flex > .mat-form-field-infix {
+  padding: 0.002em 0px !important;
+}
+.normal .mat-form-field-flex > .mat-form-field-infix {
+  padding: 0.4375em 0 !important;
+}
+.mat-form-field-label-wrapper {
+  top: -1em;
+}
+
+.mat-form-field-appearance-outline.mat-form-field-can-float.mat-form-field-should-float .mat-form-field-label {
+  transform: translateY(-0.5em) scale(0.75);
+}
+
+.mat-form-field-suffix .mat-icon-button {
+  width: 2.5em;
+  height: 1.5em !important;
+}
+
+.mat-form-field-appearance-outline .mat-form-field-outline-start {
+  border-radius: 0px 0 0 0px !important;
+}
+.mat-form-field-appearance-outline .mat-form-field-outline-end {
+  border-radius: 0px 0 0 0px !important;
+}
+
+.mat-form-field-outline-gap {
+  border: 1px solid #1b56ca;
+  border-radius: 1e-6px;
+}
+.mat-form-field-wrapper {
+  padding-bottom: 0.7em !important;
+}
+#overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 200;
+}

@@ -1,0 +1,212 @@
+@import "src/@fuse/scss/fuse";
+
+#chat {
+  .center {
+    padding: 32px !important;
+    max-width: 1400px;
+    margin: 0 auto;
+
+    @include media-breakpoint-down(md) {
+      padding: 0 !important;
+    }
+
+    .content-card {
+      display: flex;
+      flex: 1;
+      position: relative;
+      border-radius: 10px;
+    }
+  }
+  .role-side-bar {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+
+    .sidenav-header {
+      mat-toolbar {
+        border-bottom: 1px solid;
+
+        .avatar-wrapper {
+          .avatar,
+          .status {
+            cursor: pointer;
+          }
+        }
+
+        .search {
+          height: 36px;
+          line-height: 36px;
+          padding: 8px;
+          font-size: 13px;
+          @include mat-elevation(1);
+
+          .icon {
+            margin: 0;
+          }
+
+          input {
+            padding-left: 12px;
+            height: 36px;
+            border: none;
+          }
+        }
+      }
+    }
+
+    .sidenav-content {
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+
+      .contact-list,
+      .chat-list {
+        .mat-subheader {
+          padding-left: 16px;
+          font-size: 20px;
+          font-weight: 300;
+          height: 88px;
+          line-height: 88px;
+        }
+
+        .contact {
+          white-space: normal;
+          text-align: left;
+          letter-spacing: 0.01em;
+          min-height: 60px;
+          border-bottom: 1px solid;
+          font-weight: 400;
+          border-bottom-color: rgba(0, 0, 0, 0.12);
+
+          .avatar-wrapper {
+            .avatar {
+              margin-right: 16px;
+            }
+          }
+
+          .contact-name {
+            font-size: 16px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+
+          .contact-last-message {
+            line-height: normal;
+            margin-top: 0;
+          }
+
+          .contact-mood {
+            line-height: normal;
+            margin-top: 0;
+          }
+
+          .unread-message-count {
+            border-radius: 50%;
+            text-align: center;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+          }
+        }
+      }
+
+      .no-results-message {
+        position: absolute;
+        width: 100%;
+        height: 88px;
+        padding: 16px;
+        font-size: 15px;
+        font-weight: 400;
+      }
+    }
+  }
+
+  .rightBorder {
+    border-right: 1px solid rgba(0, 0, 0, 0.2);
+  }
+  .leftBorder {
+    border-left: 1px solid rgba(0, 0, 0, 0.2);
+  }
+  .whiteLeftBorder {
+    border-left: 1px solid white;
+  }
+  .bottomBorder {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  }
+  .yellowBottomBorder {
+    border-bottom: 2px solid rgba(250, 236, 37, 0.87);
+  }
+  .addDocBtn {
+    background-color: #4fab6d;
+    color: white !important;
+    border-radius: 5px !important;
+  }
+  .uploadBtn {
+    min-width: 70px !important;
+    line-height: 28px !important;
+  }
+  .title {
+    font-weight: bold;
+  }
+  .sub-Title {
+    color: #4a77fb;
+  }
+  .ProgressBarPostion1 {
+    position: absolute !important;
+    top: 350px;
+    z-index: 1;
+    left: 55%;
+  }
+  .borderClass {
+    border: 1px solid #dce1e9;
+  }
+  .boldClass {
+    font-weight: bold;
+  }
+  .cursorPointer {
+    cursor: pointer;
+  }
+  .errorClass {
+    color: red !important;
+  }
+  .roundCommon {
+    height: 20px;
+    width: 20px;
+    border-radius: 20px;
+  }
+
+  .round {
+    @extend .roundCommon;
+    background-color: rgb(187, 185, 185);
+    border: 2px solid gray;
+    cursor: pointer !important;
+  }
+  .round1 {
+    @extend .roundCommon;
+    background-color: rgb(187, 185, 185);
+    border: 2px solid #2ecc71;
+  }
+  .vertical-line {
+    width: 3px;
+    min-height: 50px;
+    border: 2px solid #2ecc71;
+    background: #2ecc71;
+    margin: 5px auto 0px auto;
+  }
+  .arrow-left {
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid #dcdcdc !important;
+  }
+  .timeline-content {
+    background-color: #dcdcdc !important;
+    // border:1px solid gray;
+    input {
+      background-color: #dcdcdc;
+    }
+  }
+  .ApproverClass {
+    @extend .boldClass;
+    text-decoration: underline;
+  }
+}
