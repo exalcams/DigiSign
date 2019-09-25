@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { MatIconRegistry, MatSnackBar } from '@angular/material';
+import { MatIconRegistry, MatSnackBar, MatDialog, MatDialogConfig } from '@angular/material';
 import { Router } from '@angular/router';
 import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
 import { SnackBarStatus } from 'app/notifications/notification-snack-bar/notification-snackbar-status-enum';
@@ -8,9 +8,10 @@ import { AuthenticationDetails } from 'app/models/master';
 import { fuseAnimations } from '@fuse/animations';
 import { Guid } from 'guid-typescript';
 import { HomeService } from 'app/services/home.service';
-import { HeaderAndApproverList, AssignedApprover, Header } from 'app/models/home.model';
+import { HeaderAndApproverList, AssignedApprover, Header, HeaderView, Approver, ApproverView } from 'app/models/home.model';
 import { FormArray, AbstractControl, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
+import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -28,15 +29,18 @@ export class DashboardComponent implements OnInit {
   CurrentDate: Date;
   notificationSnackBarComponent: NotificationSnackBarComponent;
   IsProgressBarVisibile: boolean;
-  AllHeaders: Header[] = [];
+  AllApprovers: ApproverView[] = [];
+  AllHeaders: HeaderView[] = [];
   AssignedApproversList: AssignedApprover[];
   HeaderFormGroup: FormGroup;
-  HeaderApproverColumns: string[] = ['Approvers', 'Level', 'Comments'];
+  HeaderApproverColumns: string[] = ['Approvers', 'Level'];
   HeaderApproverFormArray: FormArray = this._formBuilder.array([]);
   HeaderApproverDataSource = new BehaviorSubject<AbstractControl[]>([]);
-  SelectedHead: Header;
+  SelectedHead: HeaderView;
   fileToUpload: File;
   FileData: any;
+  IsUpdateActionType = false;
+  ApprovalFormGroup: FormGroup;
   // fileToUploadList: File[] = [];
   constructor(
     private _router: Router,
@@ -44,9 +48,10 @@ export class DashboardComponent implements OnInit {
     private sanitizer: DomSanitizer,
     public snackBar: MatSnackBar,
     private _formBuilder: FormBuilder,
-    private _homeService: HomeService
+    private _homeService: HomeService,
+    private dialog: MatDialog,
   ) {
-    this.SelectedHead = new Header();
+    this.SelectedHead = new HeaderView();
     this.CurrentDate = new Date();
     this.notificationSnackBarComponent = new NotificationSnackBarComponent(this.snackBar);
     this.IsProgressBarVisibile = false;
@@ -69,9 +74,16 @@ export class DashboardComponent implements OnInit {
       this._router.navigate(['/auth/login']);
     }
     this.HeaderFormGroup = this._formBuilder.group({
+      DocName: ['', Validators.required],
+      DocType: ['', Validators.required],
+      FileType: ['', Validators.required],
       HeaderApprovers: this.HeaderApproverFormArray
     });
-    this.GetAllHeaders();
+    this.ApprovalFormGroup = this._formBuilder.group({
+      Comments: ['', Validators.required]
+    });
+    this.GetAllApproverViews();
+    this.GetAllHeadersByUserName();
   }
 
   ResetForm(): void {
@@ -79,11 +91,18 @@ export class DashboardComponent implements OnInit {
     Object.keys(this.HeaderFormGroup.controls).forEach(key => {
       this.HeaderFormGroup.get(key).markAsUntouched();
     });
+    this.ApprovalFormGroup.reset();
+    Object.keys(this.ApprovalFormGroup.controls).forEach(key => {
+      this.ApprovalFormGroup.get(key).markAsUntouched();
+    });
   }
   ResetControl(): void {
     this.ResetHeaderApprovers();
     this.ResetForm();
-    this.SelectedHead = new Header();
+    this.SelectedHead = new HeaderView();
+    this.fileToUpload = null;
+    this.FileData = null;
+    this.IsUpdateActionType = false;
   }
 
   ClearFormArray = (formArray: FormArray) => {
@@ -95,13 +114,12 @@ export class DashboardComponent implements OnInit {
     this.ClearFormArray(this.HeaderApproverFormArray);
     this.HeaderApproverDataSource.next(this.HeaderApproverFormArray.controls);
   }
-
-  GetAllHeaders(): void {
+  GetAllApproverViews(): void {
     this.IsProgressBarVisibile = true;
-    this._homeService.GetAllHeaders().subscribe(
+    this._homeService.GetAllApproverViews().subscribe(
       (data) => {
         if (data) {
-          this.AllHeaders = data as Header[];
+          this.AllApprovers = data as ApproverView[];
         }
         this.IsProgressBarVisibile = false;
       },
@@ -112,12 +130,85 @@ export class DashboardComponent implements OnInit {
     );
   }
 
-  loadSelectedHeader(head: Header): void {
+  GetAllHeaders(): void {
+    this.IsProgressBarVisibile = true;
+    this._homeService.GetAllHeaders().subscribe(
+      (data) => {
+        if (data) {
+          this.AllHeaders = data as HeaderView[];
+          if (this.AllHeaders && this.AllHeaders.length) {
+            this.loadSelectedHeader(this.AllHeaders[0]);
+          }
+        }
+        this.IsProgressBarVisibile = false;
+      },
+      (err) => {
+        console.error(err);
+        this.IsProgressBarVisibile = false;
+      }
+    );
+  }
+
+  GetAllHeadersByUserName(): void {
+    this.IsProgressBarVisibile = true;
+    this._homeService.GetAllHeadersByUserName(this.CurrentUserName).subscribe(
+      (data) => {
+        if (data) {
+          this.AllHeaders = data as HeaderView[];
+          if (this.AllHeaders && this.AllHeaders.length) {
+            this.loadSelectedHeader(this.AllHeaders[0]);
+          }
+        }
+        this.IsProgressBarVisibile = false;
+      },
+      (err) => {
+        console.error(err);
+        this.IsProgressBarVisibile = false;
+      }
+    );
+  }
+
+  loadSelectedHeader(head: HeaderView): void {
     if (head) {
+      this.IsUpdateActionType = true;
       this.SelectedHead = head;
       this.AssignedApproversList = [];
+      this.GetHeaderDocumentByDocID();
       this.GetAssignedApproversByDocID();
     }
+  }
+
+  GetApproverName(Approvers: string): string {
+    if (this.AllApprovers && this.AllApprovers.length) {
+      const appro = this.AllApprovers.filter(x => x.ID.toString() === Approvers)[0];
+      if (appro && appro.UserName) {
+        return appro.UserName;
+      }
+    }
+    return Approvers;
+  }
+
+  FindApproverClass(app: Header, first: any, i: number): string {
+    return 'currentApproverClass';
+  }
+
+  GetHeaderDocumentByDocID(): void {
+    this.IsProgressBarVisibile = true;
+    this._homeService.GetHeaderDocumentByDocID(this.SelectedHead.DOCID).subscribe(
+      data => {
+        if (data) {
+          const file = new Blob([data], { type: 'application/pdf' });
+          // const file = new Blob([this.fileToUpload], { type: this.fileToUpload.type });
+          const fileURL = URL.createObjectURL(file);
+          this.FileData = this.sanitizer.bypassSecurityTrustResourceUrl(fileURL);
+        }
+        this.IsProgressBarVisibile = false;
+      },
+      error => {
+        console.error(error);
+        this.IsProgressBarVisibile = false;
+      }
+    );
   }
 
   GetAssignedApproversByDocID(): void {
@@ -148,7 +239,7 @@ export class DashboardComponent implements OnInit {
     const row = this._formBuilder.group({
       Approvers: [approver.Approvers, Validators.required],
       Level: [approver.Level, Validators.required],
-      Comments: [approver.Comments, Validators.required],
+      // Comments: [approver.Comments, Validators.required],
     });
     this.HeaderApproverFormArray.push(row);
     this.HeaderApproverDataSource.next(this.HeaderApproverFormArray.controls);
@@ -172,13 +263,115 @@ export class DashboardComponent implements OnInit {
   }
 
   AddHeaderApproverFormGroup(): void {
+    const PreviousIndex = this.HeaderApproverFormArray.controls.length;
     const row = this._formBuilder.group({
       Approvers: ['', Validators.required],
-      Level: ['', Validators.required],
-      Comments: ['', Validators.required],
+      Level: [PreviousIndex + 1, Validators.required],
+      // Comments: ['', Validators.required],
     });
     this.HeaderApproverFormArray.push(row);
     this.HeaderApproverDataSource.next(this.HeaderApproverFormArray.controls);
+  }
+
+  ApproverSelected(value: string): void {
+    // console.log(value);
+    if (this.AllApprovers && this.AllApprovers.length) {
+      this.AllApprovers.forEach(x => x.IsSelected = false);
+      this.DisableSelctedApprovers();
+    }
+  }
+
+  DisableSelctedApprovers(): void {
+    const HeaderApproversArry = this.HeaderFormGroup.get('HeaderApprovers') as FormArray;
+    HeaderApproversArry.controls.forEach((x, i) => {
+      const value = x.get('Approvers').value;
+      const SelectedApprover = this.AllApprovers.filter(y => y.UserName === value)[0];
+      if (SelectedApprover) {
+        SelectedApprover.IsSelected = true;
+      }
+    });
+  }
+
+  AssignApproversClicked(): void {
+    if (this.HeaderFormGroup.valid) {
+      if (!this.fileToUpload) {
+        this.notificationSnackBarComponent.openSnackBar('Please select a file', SnackBarStatus.danger);
+      } else {
+        const Actiontype = 'Create';
+        const Catagory = 'Documents';
+        this.OpenConfirmationDialog(Actiontype, Catagory);
+      }
+    } else {
+      this.ShowValidationErrors(this.HeaderFormGroup);
+    }
+  }
+
+  OpenConfirmationDialog(Actiontype: string, Catagory: string): void {
+    const dialogConfig: MatDialogConfig = {
+      data: {
+        Actiontype: Actiontype,
+        Catagory: Catagory
+      },
+    };
+    const dialogRef = this.dialog.open(NotificationDialogComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe(
+      result => {
+        if (result) {
+          if (Actiontype === 'Create') {
+            this.CreateHeader();
+          }
+          else if (Actiontype === 'Approve') {
+            this.ApproveHeader();
+          }
+        }
+      });
+  }
+
+  CreateHeader(): void {
+    this.GetHeaderValues();
+    this.IsProgressBarVisibile = true;
+    this._homeService.CreateHeader(this.SelectedHead, this.fileToUpload).subscribe(
+      (data) => {
+        if (data) {
+          this.SelectedHead.DOCID = data as number;
+          this.AssignApprovers();
+        } else {
+          this.notificationSnackBarComponent.openSnackBar('Something went wrong', SnackBarStatus.danger);
+        }
+        this.IsProgressBarVisibile = false;
+      },
+      (err) => {
+        console.error(err);
+        this.IsProgressBarVisibile = false;
+        this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+      }
+    );
+  }
+
+  AssignApprovers(): void {
+    this.GetHeaderApproverValues();
+    this.IsProgressBarVisibile = true;
+    this._homeService.AssignApprovers(this.AssignedApproversList).subscribe(
+      (data) => {
+        this.notificationSnackBarComponent.openSnackBar('Approver details updated successfully', SnackBarStatus.success);
+        this.IsProgressBarVisibile = false;
+        this.ResetControl();
+        this.GetAllHeadersByUserName();
+      },
+      (err) => {
+        console.error(err);
+        this.IsProgressBarVisibile = false;
+        this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+      }
+    );
+  }
+
+  GetHeaderValues(): void {
+    this.SelectedHead = new HeaderView();
+    this.SelectedHead.DocName = this.HeaderFormGroup.get('DocName').value;
+    this.SelectedHead.DocType = this.HeaderFormGroup.get('DocType').value;
+    this.SelectedHead.FileType = this.HeaderFormGroup.get('FileType').value;
+    this.SelectedHead.CreatedBy = this.CurrentUserID.toString();
   }
 
   GetHeaderApproverValues(): void {
@@ -189,20 +382,20 @@ export class DashboardComponent implements OnInit {
       headApp.DOCID = this.SelectedHead.DOCID.toString();
       headApp.Approvers = x.get('Approvers').value;
       headApp.Level = x.get('Level').value;
-      headApp.Comments = x.get('Comments').value;
+      // headApp.Comments = x.get('Comments').value;
       this.AssignedApproversList.push(headApp);
     });
   }
 
-  ShowValidationErrors(): void {
-    Object.keys(this.HeaderFormGroup.controls).forEach(key => {
-      if (!this.HeaderFormGroup.get(key).valid) {
+  ShowValidationErrors(formGroup: FormGroup): void {
+    Object.keys(formGroup.controls).forEach(key => {
+      if (!formGroup.get(key).valid) {
         console.log(key);
       }
-      this.HeaderFormGroup.get(key).markAsTouched();
-      this.HeaderFormGroup.get(key).markAsDirty();
-      if (this.HeaderFormGroup.get(key) instanceof FormArray) {
-        const FormArrayControls = this.HeaderFormGroup.get(key) as FormArray;
+      formGroup.get(key).markAsTouched();
+      formGroup.get(key).markAsDirty();
+      if (formGroup.get(key) instanceof FormArray) {
+        const FormArrayControls = formGroup.get(key) as FormArray;
         Object.keys(FormArrayControls.controls).forEach(key1 => {
           if (FormArrayControls.get(key1) instanceof FormGroup) {
             const FormGroupControls = FormArrayControls.get(key1) as FormGroup;
@@ -222,25 +415,36 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  AssignApproversClicked(): void {
-    if (this.HeaderFormGroup.valid) {
-      this.GetHeaderApproverValues();
-      this.IsProgressBarVisibile = true;
-      this._homeService.AssignApprovers(this.AssignedApproversList).subscribe(
-        (data) => {
-          this.notificationSnackBarComponent.openSnackBar('Approver details updated successfully', SnackBarStatus.success);
-          this.IsProgressBarVisibile = false;
-          this.GetAssignedApproversByDocID();
-        },
-        (err) => {
-          console.error(err);
-          this.IsProgressBarVisibile = false;
-          this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
-        }
-      );
+  ApproveClicked(): void {
+    if (this.ApprovalFormGroup.valid) {
+      const Actiontype = 'Approve';
+      const Catagory = 'Documents';
+      this.OpenConfirmationDialog(Actiontype, Catagory);
     } else {
-      this.ShowValidationErrors();
+      this.ShowValidationErrors(this.ApprovalFormGroup);
     }
+  }
+
+  ApproveHeader(): void {
+    const Comments = this.ApprovalFormGroup.get('Comments').value;
+    this.IsProgressBarVisibile = true;
+    this._homeService.ApproveDocument(this.SelectedHead.DOCID, this.CurrentUserName, Comments).subscribe(
+      (data) => {
+        if (data) {
+          const res = data as string;
+          this.notificationSnackBarComponent.openSnackBar(res, SnackBarStatus.success);
+        }
+        this.IsProgressBarVisibile = false;
+        this.ResetControl();
+        this.GetAllHeadersByUserName();
+      },
+      (err) => {
+        console.error(err);
+        this.IsProgressBarVisibile = false;
+        this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+      }
+    );
+    console.log(Comments);
   }
 
   AddDocumentClicked(): void {
@@ -251,7 +455,8 @@ export class DashboardComponent implements OnInit {
     if (evt.target.files && evt.target.files.length > 0) {
       this.fileToUpload = evt.target.files[0];
       // this.fileToUploadList.push(this.fileToUpload);
-      const file = new Blob([this.fileToUpload], { type: 'application/pdf' });
+      this.HeaderFormGroup.get('FileType').patchValue(this.fileToUpload.type);
+      const file = new Blob([this.fileToUpload], { type: this.fileToUpload.type });
       const fileURL = URL.createObjectURL(file);
       this.FileData = this.sanitizer.bypassSecurityTrustResourceUrl(fileURL);
     }

@@ -51,9 +51,9 @@
         </div>
         <div fxFlex="45" class="rightBorder role-side-bar">
           <!-- <div class="sidenav-content" fusePerfectScrollbar fxFlex> -->
-            <div fxLayout="row" fxLayoutAlign="start" fxFlex="1 0 auto">
-              <iframe *ngIf="fileToUpload" style="width:100%;height:74vh;" [src]="FileData"></iframe>
-            </div>
+          <div fxLayout="row" fxLayoutAlign="start" fxFlex="1 0 auto">
+            <iframe *ngIf="FileData" style="width:100%;height:100%;" [src]="FileData"></iframe>
+          </div>
           <!-- </div> -->
         </div>
         <div fxFlex="34.9" class="role-side-bar">
@@ -61,34 +61,59 @@
             <div class="bottomBorder mt-24">
               <span class="mx-8 mb-4 title">Manual Upload</span>
             </div>
-            <div fxLayout class="my-24 mx-8">
-              <div fxFlex="70" class="mr-8">
-                <mat-form-field appearance="outline">
-                  <input matInput>
-                </mat-form-field>
-              </div>
-              <div fxFlex="30 mx-8" style="margin-top: 4px" fxLayoutAlign="center start">
-                <button class="accent uploadBtn" mat-raised-button (click)="fileInput1.click()">
-                  Upload
-                </button>
-                <input hidden type="file" accept="application/pdf" #fileInput1 id="file"
-                  (change)="handleFileInput($event,index)" />
-              </div>
-            </div>
-            <div class="bottomBorder mx-48"></div>
-            <div *ngIf="!SelectedHead.DOCID">
-              <div class="mt-16 m-8">
-                <div fxLayout="row">
-                  <div fxFlex class="p-8 sub-Title">Workflow Assignment </div>
-                  <div fxFlex align="end">
-                    <img class="p-8 icon-style1" matTooltip="Add" (click)="AddHeaderApprover()"
-                      src="assets/images/plus.png">
-                    <img class="p-8 icon-style1" matTooltip="Remove" (click)="RemoveHeaderApprover()"
-                      src="assets/images/remove.png">
+            <div *ngIf="!IsUpdateActionType">
+              <form name="form" [formGroup]="HeaderFormGroup" class="m-8">
+                <div fxLayout class="my-12 mx-8">
+                  <div fxFlex class="mr-8">
+                    <div fxLayout="row" fxLayoutAlign="start">
+                      <mat-form-field appearance="outline" class="pr-8" fxFlex="50">
+                        <input matInput placeholder="Document name" formControlName="DocName">
+                        <mat-error
+                          *ngIf="HeaderFormGroup.get('DocName').touched &&  HeaderFormGroup.get('DocName').hasError('required')">
+                          Document name is required
+                        </mat-error>
+                      </mat-form-field>
+                      <mat-form-field appearance="outline" class="pr-8" fxFlex="50">
+                        <input matInput placeholder="Document type" formControlName="DocType">
+                        <mat-error
+                          *ngIf="HeaderFormGroup.get('DocType').touched && HeaderFormGroup.get('DocType').hasError('required')">
+                          Document type is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+                    <div fxLayout="row" fxLayoutAlign="start">
+                      <mat-form-field appearance="outline" class="pr-8" fxFlex="50">
+                        <input matInput placeholder="File type" formControlName="FileType" readonly>
+                        <mat-error
+                          *ngIf="HeaderFormGroup.get('FileType').touched && HeaderFormGroup.get('FileType').hasError('required')">
+                          File type is required
+                        </mat-error>
+                      </mat-form-field>
+                      <div fxFlex="50" class="pr-8" fxLayoutAlign="end start">
+                        <button class="accent uploadBtn" mat-raised-button (click)="fileInput1.click()">
+                          Upload
+                        </button>
+                        <input hidden type="file" accept="application/pdf" #fileInput1 id="file"
+                          (change)="handleFileInput($event,index)" />
+                      </div>
+                    </div>
+                    <div *ngIf="fileToUpload" fxLayout="row">
+                      <div fxFlex fxLayoutAlign="end center">{{fileToUpload.name}}</div>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <form name="form" [formGroup]="HeaderFormGroup" class="m-8">
+                <div class="bottomBorder mx-48"></div>
+                <div class="mt-16 m-8">
+                  <div fxLayout="row">
+                    <div fxFlex class="p-8 sub-Title">Workflow Assignment </div>
+                    <div fxFlex align="end">
+                      <img class="p-8 icon-style1" matTooltip="Add" (click)="AddHeaderApprover()"
+                        src="assets/images/plus.png">
+                      <img class="p-8 icon-style1" matTooltip="Remove" (click)="RemoveHeaderApprover()"
+                        src="assets/images/remove.png">
+                    </div>
+                  </div>
+                </div>
                 <table *ngIf="HeaderApproverDataSource?.value?.length" mat-table [dataSource]="HeaderApproverDataSource"
                   class="mat-elevation-z8" formArrayName="HeaderApprovers">
                   <tr mat-header-row *matHeaderRowDef="HeaderApproverColumns">
@@ -98,8 +123,15 @@
                   <ng-container matColumnDef="Approvers">
                     <th mat-header-cell *matHeaderCellDef> Approvers </th>
                     <td mat-cell *matCellDef="let row; let index = index" [formGroupName]="index">
-                      <input matInput formControlName="Approvers">
-                      <span class="pl-4 errorClass" *ngIf="HeaderFormGroup.get('HeaderApprovers').controls[index].get('Approvers').touched && 
+                      <!-- <input matInput formControlName="Approvers"> -->
+                      <mat-select style="min-width: 150px" matInput formControlName="Approvers" 
+                      (selectionChange)="ApproverSelected()">
+                        <mat-option>None</mat-option>
+                        <mat-option *ngFor="let appr of AllApprovers" [value]="appr.UserName" [disabled]="appr.IsSelected">
+                          {{appr.UserName}}
+                        </mat-option>
+                      </mat-select>
+                      <span class="pl-4 errorClass" *ngIf="HeaderFormGroup.get('HeaderApprovers').controls[index].get('Approvers').touched &&
               HeaderFormGroup.get('HeaderApprovers').controls[index].get('Approvers').hasError('required')">
                         *
                       </span>
@@ -108,46 +140,48 @@
 
                   <ng-container matColumnDef="Level">
                     <th mat-header-cell *matHeaderCellDef> Level </th>
-                    <td mat-cell *matCellDef="let row; let index = index" [formGroupName]="index">
-                      <input matInput formControlName="Level">
-                      <span class="pl-4 errorClass" *ngIf="HeaderFormGroup.get('HeaderApprovers').controls[index].get('Level').touched && 
+                    <td mat-cell *matCellDef="let row; let index = index" [formGroupName]="index" class="pl-8">
+                      <input matInput formControlName="Level" readonly>
+                      <span class="pl-4 errorClass" *ngIf="HeaderFormGroup.get('HeaderApprovers').controls[index].get('Level').touched &&
               HeaderFormGroup.get('HeaderApprovers').controls[index].get('Level').hasError('required')">
                         *
                       </span>
                     </td>
                   </ng-container>
 
-                  <ng-container matColumnDef="Comments">
+                  <!-- <ng-container matColumnDef="Comments">
                     <th mat-header-cell *matHeaderCellDef> Comments </th>
                     <td mat-cell *matCellDef="let row; let index = index" [formGroupName]="index">
                       <input matInput formControlName="Comments">
-                      <span class="pl-4 errorClass" *ngIf="HeaderFormGroup.get('HeaderApprovers').controls[index].get('Comments').touched && 
+                      <span class="pl-4 errorClass" *ngIf="HeaderFormGroup.get('HeaderApprovers').controls[index].get('Comments').touched &&
               HeaderFormGroup.get('HeaderApprovers').controls[index].get('Comments').hasError('required')">
                         *
                       </span>
                     </td>
-                  </ng-container>
+                  </ng-container> -->
                 </table>
-              </form>
-              <div class="mt-16 m-8" *ngIf="HeaderApproverDataSource?.value?.length">
-                <div fxLayout="row">
-                  <div fxFlex align="end">
-                    <button mat-raised-button (click)="AssignApproversClicked()" color="accent">Assign
-                      approvers</button>
+                <div class="mt-16 m-8" *ngIf="HeaderApproverDataSource?.value?.length">
+                  <div fxLayout="row">
+                    <div fxFlex align="end">
+                      <button mat-raised-button (click)="AssignApproversClicked()" color="accent">Assign
+                        approvers</button>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </form>
             </div>
-            <div *ngIf="SelectedHead.DOCID">
+            <div *ngIf="IsUpdateActionType">
               <div class="mt-16 m-8">
                 <div fxLayout="row">
                   <div fxFlex class="p-8 sub-Title">Workflow Timeline </div>
                 </div>
               </div>
               <div fxLayout fxLayoutAlign="center" class="m-4"
-                *ngFor="let app of AssignedApproversList;let i=index;let last = last">
+                *ngFor="let app of AssignedApproversList;let i=index;let first=first;let last = last">
                 <div fxFlex="8" fxLayout="column" fxLayoutAlign="start center">
-                  <div class="round1" [style.background-color]="last?'#2ecc71':'white'"></div>
+                  <div class="round1" [class.approvedClass]="app.IsApproved"
+                    [class.currentApproverClass]="!app.IsApproved && (first || !first && AssignedApproversList[i-1].IsApproved)">
+                  </div>
                   <div fxFlex class="vertical-line"></div>
                 </div>
                 <div fxFlex fxLayout class="mb-8">
@@ -158,8 +192,11 @@
                     </div>
                     <div fxFlex="90" class="pl-4" fxLayout="column">
                       <div fxFlex fxLayout fxLayoutAlign="space-between center">
-                        <div fxFlex class="ApproverClass">{{app.Approvers}} </div>
+                        <div fxFlex class="BoldUnderLine">{{GetApproverName(app.Approvers)}} </div>
                         <div fxFlex>{{app.AssignedOn | date}}</div>
+                      </div>
+                      <div fxFlex class="mt-8" *ngIf="app.Comments">
+                        <div class="BoldUnderLine">Comment : {{app.Comments}}</div>
                       </div>
                       <div fxFlex class="mt-8">
                         <div>{{app.IsApproved?'Approved':'Not approved'}}</div>
@@ -168,31 +205,21 @@
                   </div>
                 </div>
               </div>
-              <div fxLayout fxLayoutAlign="center" class="m-4">
-                <div fxFlex="8" fxLayoutAlign="start start">
-                  <div class="ml-4">
-                    <div class="round"></div>
-                  </div>
-                </div>
-                <div fxFlex fxLayout class="mb-8">
-                  <div fxFlex fxLayoutAlign="center" class="arrow-left"></div>
-                  <div fxFlex="95" fxLayout fxLayoutAlign="center" class="p-12 timeline-content">
-                    <div fxFlex="10">
-                      <mat-icon>account_circle</mat-icon>
-                    </div>
-                    <div fxFlex="90" class="pl-4" fxLayout="column">
-                      <div fxFlex fxLayout fxLayoutAlign="space-between center">
-                        <div fxFlex class="ApproverClass">{{CurrentUserName}}</div>
-                        <div fxFlex>{{CurrentDate | date}}</div>
-                      </div>
-                      <div fxFlex class="mt-8">
-                        <!-- <form name="form" [formGroup]="CAPAResponseFormGroup">
-                      <input matInput placeholder="Reply here.." formControlName="Comments">
-                    </form> -->
-                      </div>
+              <div class="p-8">
+                <form name="form1" [formGroup]="ApprovalFormGroup">
+                  <div fxLayout fxLayoutAlign="center">
+                    <mat-form-field appearance="outline" fxFlex="70" class="mt-4">
+                      <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="5" placeholder="Comments"
+                        formControlName="Comments" required></textarea>
+                      <mat-error *ngIf="ApprovalFormGroup.get('Comments').hasError('required')">
+                        Comments is required
+                      </mat-error>
+                    </mat-form-field>
+                    <div fxFlex="30" fxLayoutAlign="end center">
+                      <button mat-raised-button color="accent" (click)="ApproveClicked()">Approve</button>
                     </div>
                   </div>
-                </div>
+                </form>
               </div>
             </div>
           </div>

@@ -205,8 +205,17 @@
       background-color: #dcdcdc;
     }
   }
-  .ApproverClass {
+  .BoldUnderLine {
     @extend .boldClass;
     text-decoration: underline;
+  }
+  .mat-form-field-infix {
+    width: auto !important;
+  }
+  .currentApproverClass {
+    background-color: white;
+  }
+  .approvedClass {
+    background-color: #2ecc71;
   }
 }
