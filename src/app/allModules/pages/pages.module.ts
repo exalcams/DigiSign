@@ -51,11 +51,17 @@ import {
 import { FuseSharedModule } from '@fuse/shared.module';
 import { FormsModule } from '@angular/forms';
 import { DashboardComponent } from './dashboard/dashboard.component';
+import { PdfDialogComponent } from './pdf-dialog/pdf-dialog.component';
+import { SignedDocumentComponent } from './signed-document/signed-document.component';
 
 const routes = [
     {
         path: 'dashboard',
         component: DashboardComponent
+    },
+    {
+        path: 'signedDoc',
+        component: SignedDocumentComponent
     },
     {
         path: '**',
@@ -116,9 +122,10 @@ const routes = [
 
         FormsModule,
     ],
-    declarations: [DashboardComponent],
+    declarations: [DashboardComponent, SignedDocumentComponent, PdfDialogComponent],
     providers: [],
     entryComponents: [
+        PdfDialogComponent
     ]
 })
 export class PagesModule { }

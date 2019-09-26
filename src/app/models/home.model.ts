@@ -22,6 +22,19 @@ export class HeaderView {
     LastUpdatedOn?: Date;
     IsActive: boolean;
 }
+
+export class SignedHeaderView {
+    DOCID: number;
+    DocName: string;
+    DocType: string;
+    FileType: string;
+    NoOfApprover: number;
+    LastApprover: string;
+    LastApproverComment: string;
+    LastApprovedOn: Date;
+    CreatedOn: Date;
+
+}
 export class Approver {
     ID: number;
     UserName: string;
@@ -43,7 +56,7 @@ export class ApproverView {
 }
 export class AssignedApprover {
     ID: number;
-    DOCID: string;
+    DOCID: number;
     Approvers: string;
     Level: number;
     Comments: string;

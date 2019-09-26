@@ -5,7 +5,7 @@ import { _MatChipListMixinBase } from '@angular/material';
 import { AuthService } from './auth.service';
 import { catchError } from 'rxjs/operators';
 import { MenuApp, RoleWithApp, UserWithRole, UserNotification } from 'app/models/master';
-import { HeaderAndApproverList, AssignedApprover, Header, HeaderView, Approver, ApproverView } from 'app/models/home.model';
+import { HeaderAndApproverList, AssignedApprover, Header, HeaderView, Approver, ApproverView, SignedHeaderView } from 'app/models/home.model';
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +40,10 @@ export class HomeService {
     return this._httpClient.get<HeaderView[]>(`${this.baseAddress}api/Home/GetAllHeaders`)
       .pipe(catchError(this.errorHandler));
   }
-
+  GetAllSignedDocuments(): Observable<SignedHeaderView[] | string> {
+    return this._httpClient.get<SignedHeaderView[]>(`${this.baseAddress}api/Home/GetAllSignedDocuments`)
+      .pipe(catchError(this.errorHandler));
+  }
   GetAllHeadersByUserName(UserName: string): Observable<HeaderView[] | string> {
     return this._httpClient.get<HeaderView[]>(`${this.baseAddress}api/Home/GetAllHeadersByUserName?UserName=${UserName}`)
       .pipe(catchError(this.errorHandler));

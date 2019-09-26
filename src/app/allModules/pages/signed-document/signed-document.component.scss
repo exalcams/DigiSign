@@ -1,0 +1,10 @@
+@import "src/@fuse/scss/fuse";
+.ProgressBarPostion1 {
+  position: absolute !important;
+  top: 350px;
+  z-index: 1;
+  left: 55%;
+}
+.successColor {
+  color: #449d44 !important;
+}

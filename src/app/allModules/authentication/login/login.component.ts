@@ -202,6 +202,18 @@ export class LoginComponent implements OnInit {
         }
       );
     }
+    if (this.MenuItems.indexOf('SignedDocument') >= 0) {
+      this.children.push(
+        {
+          id: 'signedDocument',
+          title: 'Signed Document',
+          translate: 'NAV.SAMPLE.TITLE',
+          type: 'item',
+          icon: 'assignment',
+          url: '/pages/signedDoc',
+        }
+      );
+    }
     if (this.MenuItems.indexOf('App') >= 0) {
       this.subChildren.push(
         {

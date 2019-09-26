@@ -103,6 +103,7 @@ export class DashboardComponent implements OnInit {
     this.fileToUpload = null;
     this.FileData = null;
     this.IsUpdateActionType = false;
+    this.EnableAllApprovers();
   }
 
   ClearFormArray = (formArray: FormArray) => {
@@ -292,6 +293,12 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  EnableAllApprovers(): void {
+    if (this.AllApprovers && this.AllApprovers.length) {
+      this.AllApprovers.forEach(x => x.IsSelected = false);
+    }
+  }
+
   AssignApproversClicked(): void {
     if (this.HeaderFormGroup.valid) {
       if (!this.fileToUpload) {
@@ -379,7 +386,7 @@ export class DashboardComponent implements OnInit {
     const HeaderApproversArr = this.HeaderFormGroup.get('HeaderApprovers') as FormArray;
     HeaderApproversArr.controls.forEach((x, i) => {
       const headApp: AssignedApprover = new AssignedApprover();
-      headApp.DOCID = this.SelectedHead.DOCID.toString();
+      headApp.DOCID = this.SelectedHead.DOCID;
       headApp.Approvers = x.get('Approvers').value;
       headApp.Level = x.get('Level').value;
       // headApp.Comments = x.get('Comments').value;
