@@ -20,32 +20,21 @@
                   Uploaded Documents
                 </div>
                 <span class="yellowBottomBorder ml-12"></span>
-                <div fxLayout fxLayoutAlign="start center" class="borderClass cursorPointer m-8"
-                  *ngFor="let head of AllHeaders" [class.accent]="SelectedHead===head"
-                  (click)="loadSelectedHeader(head)">
-                  <div class="p-8">
-                    <div class="boldClass p-4">DOC ID : #{{head.DOCID}}</div>
-                    <div class="p-4">Doc name : {{head.DocName}}</div>
-                    <div class="p-4">Doc type : {{head.DocType}}</div>
-                  </div>
-                </div>
-                <!-- <button mat-button class="contact py-4 px-8"
-                  *ngFor="let doc of AllUnSignedDocuments | filter: searchText" (click)="loadSelectedDocument(doc)"
-                  ngClass="{'unread':contact.unread}" [@animate]="{value:'*',params:{y:'100%'}}"
-                  [style.background-color]="selectID==doc.ID?'lightgrey':'white'">
-                  <div fxLayout="row" fxLayoutAlign="start center">
-                    <div fxLayout="column" fxFlex>
-                      <div class="contact-name">{{doc.INV_NAME}}</div>
-                      <div class="contact-last-message-time">
-                        {{doc.DOCTYPE}}
+                <div fxLayout fxLayoutAlign="center" class="borderClass m-8" *ngFor="let head of AllHeaders">
+                  <div fxFlex="15" fxLayoutAlign="start center" class="borderRightClass pt-12">
+                    <div class="mx-4">
+                      <div class="round" (click)="loadSelectedHeader(head)">
+                        <div class="round1" [style.background-color]="SelectedHead===head?'#2ecc71':'white'"></div>
                       </div>
                     </div>
                   </div>
-                </button> -->
+                  <div fxFlex="85" class="p-12">
+                    <div class="boldClass p-4">Doc. ID : #{{head.DOCID}}</div>
+                    <div class="p-4">Doc. Name : {{head.DocName}}</div>
+                    <div class="p-4">Doc. Type : {{head.DocType}}</div>
+                  </div>
+                </div>
               </div>
-              <!-- <div *ngIf="(AllUnSignedDocuments | filter: searchText).length === 0" class="no-results-message">
-                No results..
-              </div> -->
             </div>
           </div>
         </div>
@@ -56,7 +45,7 @@
         </div>
         <div fxFlex="34.9" class="role-side-bar">
           <div class="sidenav-content" fusePerfectScrollbar fxFlex>
-            <div class="bottomBorder mt-24">
+            <div class="bottomBorder mt-24" *ngIf="!IsUpdateActionType">
               <span class="mx-8 mb-4 title">Manual Upload</span>
             </div>
             <div *ngIf="!IsUpdateActionType">
@@ -121,11 +110,11 @@
                   <ng-container matColumnDef="Approvers">
                     <th mat-header-cell *matHeaderCellDef> Approvers </th>
                     <td mat-cell *matCellDef="let row; let index = index" [formGroupName]="index">
-                      <!-- <input matInput formControlName="Approvers"> -->
-                      <mat-select style="min-width: 150px" matInput formControlName="Approvers" 
-                      (selectionChange)="ApproverSelected()">
+                      <mat-select style="min-width: 150px" matInput formControlName="Approvers"
+                        (selectionChange)="ApproverSelected()">
                         <mat-option>None</mat-option>
-                        <mat-option *ngFor="let appr of AllApprovers" [value]="appr.UserName" [disabled]="appr.IsSelected">
+                        <mat-option *ngFor="let appr of AllApprovers" [value]="appr.UserName"
+                          [disabled]="appr.IsSelected">
                           {{appr.UserName}}
                         </mat-option>
                       </mat-select>
@@ -169,56 +158,71 @@
               </form>
             </div>
             <div *ngIf="IsUpdateActionType">
-              <div class="mt-16 m-8">
+              <!-- <div class="mt-16 m-8">
                 <div fxLayout="row">
                   <div fxFlex class="p-8 sub-Title">Workflow Timeline </div>
                 </div>
-              </div>
-              <div fxLayout fxLayoutAlign="center" class="m-4"
-                *ngFor="let app of AssignedApproversList;let i=index;let first=first;let last = last">
-                <div fxFlex="8" fxLayout="column" fxLayoutAlign="start center">
-                  <div class="round1" [class.approvedClass]="app.IsApproved"
-                    [class.currentApproverClass]="!app.IsApproved && (first || !first && AssignedApproversList[i-1].IsApproved)">
-                  </div>
-                  <div fxFlex class="vertical-line"></div>
-                </div>
-                <div fxFlex fxLayout class="mb-8">
-                  <div fxFlex fxLayoutAlign="center" class="arrow-left"></div>
-                  <div fxFlex="95" fxLayout fxLayoutAlign="center" class="p-12 timeline-content">
-                    <div fxFlex="10">
-                      <mat-icon>account_circle</mat-icon>
+              </div> -->
+              <mat-card class="m-12 p-0 borderClass">
+                <mat-card-content>
+                  <div fxLayout="column" class="lightBlueBg mb-12">
+                    <div fxFlex FxLayoutAlign="center">
+                      <div class="BoldUnderLine p-4 pl-12" fxFlex align="center">DOC ID : #{{SelectedHead.DOCID}}</div>
                     </div>
-                    <div fxFlex="90" class="pl-4" fxLayout="column">
-                      <div fxFlex fxLayout fxLayoutAlign="space-between center">
-                        <div fxFlex class="BoldUnderLine">{{GetApproverName(app.Approvers)}} </div>
-                        <div fxFlex>{{app.AssignedOn | date}}</div>
+                    <div fxFlex fxLayout fxLayoutAlign="space-between center">
+                      <div fxFlex class="p-4 pl-12">Doc. Name : <span class="UnderLine">{{SelectedHead.DocName}}</span>
                       </div>
-                      <div fxFlex class="mt-8" *ngIf="app.Comments">
-                        <div class="BoldUnderLine">Comment : {{app.Comments}}</div>
-                      </div>
-                      <div fxFlex class="mt-8">
-                        <div>{{app.IsApproved?'Approved':'Not approved'}}</div>
-                      </div>
+                      <div fxFlex class="p-4 pr-12" align="end">Doc. Type : <span
+                          class="UnderLine">{{SelectedHead.DocType}}</span></div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div class="p-8">
-                <form name="form1" [formGroup]="ApprovalFormGroup">
-                  <div fxLayout fxLayoutAlign="center">
-                    <mat-form-field appearance="outline" fxFlex="70" class="mt-4">
-                      <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="5" placeholder="Comments"
-                        formControlName="Comments" required></textarea>
-                      <mat-error *ngIf="ApprovalFormGroup.get('Comments').hasError('required')">
-                        Comments is required
-                      </mat-error>
-                    </mat-form-field>
-                    <div fxFlex="30" fxLayoutAlign="end center">
-                      <button mat-raised-button color="accent" (click)="ApproveClicked()">Approve</button>
+                  <div fxLayout fxLayoutAlign="center" class="mx-8 mb-4"
+                    *ngFor="let app of AssignedApproversList;let i=index;let first=first;let last = last">
+                    <div fxFlex="8" fxLayout="column" fxLayoutAlign="start center">
+                      <div class="round2" [class.approvedClass]="app.IsApproved"
+                        [class.currentApproverClass]="!app.IsApproved && (first || !first && AssignedApproversList[i-1].IsApproved)">
+                      </div>
+                      <div fxFlex class="vertical-line"></div>
+                    </div>
+                    <div fxFlex fxLayout class="mb-8">
+                      <div fxFlex fxLayoutAlign="center" class="arrow-left"></div>
+                      <div fxFlex="95" fxLayout fxLayoutAlign="center" class="p-12 timeline-content">
+                        <div fxFlex="10">
+                          <mat-icon>account_circle</mat-icon>
+                        </div>
+                        <div fxFlex="90" class="pl-4" fxLayout="column">
+                          <div fxFlex fxLayout fxLayoutAlign="space-between center">
+                            <div fxFlex class="BoldUnderLine">{{GetApproverName(app.Approvers)}} </div>
+                            <div fxFlex>{{app.AssignedOn | date}}</div>
+                          </div>
+                          <div fxFlex class="mt-8" *ngIf="app.Comments">
+                            <div class="BoldUnderLine">Comment : {{app.Comments}}</div>
+                          </div>
+                          <div fxFlex class="mt-8">
+                            <div>{{app.IsApproved?'Approved':'Not approved'}}</div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </form>
-              </div>
+                  <div class="p-8">
+                    <form name="form1" [formGroup]="ApprovalFormGroup">
+                      <div fxLayout fxLayoutAlign="center">
+                        <mat-form-field appearance="outline" fxFlex="70" class="mt-4">
+                          <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="5" placeholder="Comments"
+                            formControlName="Comments" required></textarea>
+                          <mat-error *ngIf="ApprovalFormGroup.get('Comments').hasError('required')">
+                            Comments is required
+                          </mat-error>
+                        </mat-form-field>
+                        <div fxFlex="30" fxLayoutAlign="end center">
+                          <button mat-raised-button color="accent" (click)="ApproveClicked()">Approve</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </mat-card-content>
+              </mat-card>
             </div>
           </div>
         </div>

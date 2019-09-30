@@ -171,6 +171,7 @@ export class DashboardComponent implements OnInit {
 
   loadSelectedHeader(head: HeaderView): void {
     if (head) {
+      this.ResetControl();
       this.IsUpdateActionType = true;
       this.SelectedHead = head;
       this.AssignedApproversList = [];

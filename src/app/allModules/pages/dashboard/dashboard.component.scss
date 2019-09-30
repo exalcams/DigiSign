@@ -158,11 +158,27 @@
   .borderClass {
     border: 1px solid #dce1e9;
   }
+  .borderRightClass {
+    border-right: 1px solid #dce1e9;
+  }
+  .borderLeftClass {
+    border-left: 1px solid #dce1e9;
+  }
+  .borderTop {
+    border-top: 1px solid #dce1e9;
+  }
+  .borderBottom {
+    border-bottom: 1px solid #dce1e9;
+    padding-bottom: 8px;
+  }
   .boldClass {
     font-weight: bold;
   }
   .cursorPointer {
     cursor: pointer;
+  }
+  .lightBlueBg {
+    background-color: #e5ecf2;
   }
   .errorClass {
     color: red !important;
@@ -175,11 +191,18 @@
 
   .round {
     @extend .roundCommon;
-    background-color: rgb(187, 185, 185);
+    background-color: white;
     border: 2px solid gray;
     cursor: pointer !important;
   }
   .round1 {
+    height: 12px;
+    width: 12px;
+    border-radius: 12px;
+    background-color: white;
+    margin: 2px;
+  }
+  .round2 {
     @extend .roundCommon;
     background-color: rgb(187, 185, 185);
     border: 2px solid #2ecc71;
@@ -187,9 +210,9 @@
   .vertical-line {
     width: 3px;
     min-height: 50px;
-    border: 2px solid #2ecc71;
+    border: 1px solid #2ecc71;
     background: #2ecc71;
-    margin: 5px auto 0px auto;
+    margin: 3px auto 0px auto;
   }
   .arrow-left {
     width: 0;
@@ -205,10 +228,14 @@
       background-color: #dcdcdc;
     }
   }
-  .BoldUnderLine {
-    @extend .boldClass;
+  .UnderLine{
     text-decoration: underline;
   }
+  .BoldUnderLine {
+    @extend .boldClass;
+    @extend .UnderLine;
+  }
+  
   .mat-form-field-infix {
     width: auto !important;
   }
