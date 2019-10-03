@@ -211,7 +211,7 @@
                         <mat-form-field appearance="outline" fxFlex="70" class="mt-4">
                           <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="5" placeholder="Comments"
                             formControlName="Comments" required></textarea>
-                          <mat-error *ngIf="ApprovalFormGroup.get('Comments').hasError('required')">
+                          <mat-error *ngIf="ApprovalFormGroup.get('Comments').touched && ApprovalFormGroup.get('Comments').hasError('required')">
                             Comments is required
                           </mat-error>
                         </mat-form-field>

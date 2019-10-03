@@ -1,0 +1,56 @@
+@import "src/@fuse/scss/fuse";
+#chat {
+  .center {
+    padding: 32px !important;
+    max-width: 1400px;
+    margin: 0 auto;
+
+    @include media-breakpoint-down(md) {
+      padding: 0 !important;
+    }
+
+    .content-card {
+      display: flex;
+      flex: 1;
+      position: relative;
+      border-radius: 10px;
+    }
+  }
+
+  .ProgressBarPostion1 {
+    position: absolute !important;
+    top: 350px;
+    z-index: 1;
+    left: 55%;
+  }
+  .borderClass {
+    border: 1px solid #dce1e9;
+  }
+  .borderRightClass {
+    border-right: 1px solid #dce1e9;
+  }
+  .borderLeftClass {
+    border-left: 1px solid #dce1e9;
+  }
+  .borderTop {
+    border-top: 1px solid #dce1e9;
+  }
+  .borderBottom {
+    border-bottom: 1px solid #dce1e9;
+    padding-bottom: 8px;
+  }
+  .boldClass {
+    font-weight: bold;
+  }
+  .labelClass{
+    @extend .boldClass;
+    margin-top: 8px;
+  }
+  .cursorPointer {
+    cursor: pointer;
+  }
+  .uploadBtn {
+    min-width: 70px !important;
+    line-height: 28px !important;
+  }
+}

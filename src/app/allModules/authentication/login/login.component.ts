@@ -214,6 +214,18 @@ export class LoginComponent implements OnInit {
         }
       );
     }
+    if (this.MenuItems.indexOf('TemplateCreation') >= 0) {
+      this.children.push(
+        {
+          id: 'templateCreation',
+          title: 'Template Creation',
+          translate: 'NAV.SAMPLE.TITLE',
+          type: 'item',
+          icon: 'assignment',
+          url: '/pages/templateCreation',
+        }
+      );
+    }
     if (this.MenuItems.indexOf('App') >= 0) {
       this.subChildren.push(
         {

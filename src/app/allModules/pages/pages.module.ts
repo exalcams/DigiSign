@@ -53,6 +53,7 @@ import { FormsModule } from '@angular/forms';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PdfDialogComponent } from './pdf-dialog/pdf-dialog.component';
 import { SignedDocumentComponent } from './signed-document/signed-document.component';
+import { TemplateCreationComponent } from './template-creation/template-creation.component';
 
 const routes = [
     {
@@ -62,6 +63,10 @@ const routes = [
     {
         path: 'signedDoc',
         component: SignedDocumentComponent
+    },
+    {
+        path: 'templateCreation',
+        component: TemplateCreationComponent
     },
     {
         path: '**',
@@ -122,7 +127,7 @@ const routes = [
 
         FormsModule,
     ],
-    declarations: [DashboardComponent, SignedDocumentComponent, PdfDialogComponent],
+    declarations: [DashboardComponent, SignedDocumentComponent, PdfDialogComponent, TemplateCreationComponent],
     providers: [],
     entryComponents: [
         PdfDialogComponent
