@@ -39,7 +39,6 @@ export class TemplateCreationComponent implements OnInit {
   ParameterItemFormArray: FormArray = this._formBuilder.array([]);
   ParameterItemDataSource = new BehaviorSubject<AbstractControl[]>([]);
 
-
   constructor(
     private _router: Router,
     matIconRegistry: MatIconRegistry,
@@ -73,6 +72,10 @@ export class TemplateCreationComponent implements OnInit {
       Description: ['', Validators.required],
       Entity: ['', Validators.required],
       Group: ['', Validators.required],
+    });
+
+    this.ParameterFormGroup = this._formBuilder.group({
+      ParameterItems: this.ParameterItemFormArray
     });
 
     this.GetAllTemplates();

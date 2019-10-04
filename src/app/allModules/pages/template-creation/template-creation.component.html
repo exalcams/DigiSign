@@ -1,6 +1,6 @@
 <div id="chat" class="page-layout carded fullwidth inner-scroll">
   <div class="top-bg accent"></div>
-  <div class="center">
+  <div class="center" fusePerfectScrollbar>
     <div fxLayout="column" fxLayoutAlign="center" fxLayoutGap="10px">
       <mat-card class="m-12 p-12" style="border-radius: 10px;">
         <mat-card-header>
@@ -12,7 +12,7 @@
         <mat-card-content>
           <form name="form" [formGroup]="TemplateCreationFormGroup">
             <div fxLayout class="mt-16">
-              <div fxFlex fxLayout="column">
+              <div fxFlex="40" fxLayout="column">
                 <div fxFlex fxLayout>
                   <div class="labelClass" fxFlex="30" fxLayoutAlign="end start">Template Type </div>
                   <mat-form-field appearance="outline" fxFlex="70" class="mx-12">
@@ -38,9 +38,9 @@
                   </div>
                 </div>
               </div>
-              <div fxFlex fxLayout>
-                <div class="labelClass" fxFlex="30" fxLayoutAlign="end start">Description </div>
-                <mat-form-field appearance="outline" fxFlex="70" class="mx-12">
+              <div fxFlex="60" fxLayout>
+                <div class="labelClass ml-24" fxLayoutAlign="start">Description </div>
+                <mat-form-field appearance="outline" fxFlex class="mx-12">
                   <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="5" placeholder="Description"
                     formControlName="Description" required></textarea>
                   <mat-error
@@ -52,7 +52,7 @@
             </div>
             <div class="borderTop mx-48"></div>
             <div fxLayout class="mt-12">
-              <div fxFlex fxLayout>
+              <div fxFlex="40" fxLayout>
                 <div class="labelClass" fxFlex="30" fxLayoutAlign="end start">Entity</div>
                 <mat-form-field appearance="outline" fxFlex="70" class="mx-12">
                   <input matInput formControlName="Entity">
@@ -62,9 +62,9 @@
                   </mat-error>
                 </mat-form-field>
               </div>
-              <div fxFlex fxLayout>
-                <div class="labelClass" fxFlex="30" fxLayoutAlign="end start">Group</div>
-                <mat-form-field appearance="outline" fxFlex="70" class="mx-12">
+              <div fxFlex="40" fxLayout>
+                <div class="labelClass ml-24 mr-32" fxLayoutAlign="start">Group</div>
+                <mat-form-field appearance="outline" fxFlex class="mx-12">
                   <mat-select style="min-width: 150px" matInput formControlName="Group">
                     <mat-option *ngFor="let temp of AllGroups" [value]="temp.GroupName">
                       {{temp.GroupName}}
@@ -75,6 +75,11 @@
                     Group is required
                   </mat-error>
                 </mat-form-field>
+              </div>
+              <div fxFlex="20" fxLayoutAlign="center start">
+                <button class="submitBtn mt-4" mat-raised-button>
+                  Submit
+                </button>
               </div>
             </div>
           </form>
@@ -87,14 +92,20 @@
               <div fxFlex class="boldClass">Template overview</div>
               <div class="borderTop ml-24 mt-4 mb-12"></div>
               <div fxLayout="row" fxLayoutAlign="start" fxFlex="1 0 auto" class="mr-12">
-                <iframe *ngIf="FileData" style="width:100%;height:100%;" [src]="FileData"></iframe>
+                <iframe *ngIf="FileData" style="width:100%;height:auto;" [src]="FileData"></iframe>
               </div>
             </div>
           </div>
           <div fxFlex>
-            <div fxLayout="column" class="pl-12 py-12">
-              <div fxFlex class="boldClass">Parameter mapping</div>
-              <div class="borderTop ml-24 mt-4 mb-12"></div>
+            <div fxLayout="column" class="py-12">
+              <div fxFlex fxLayout="row">
+                <div fxFlex class="boldClass pl-12">Parameter mapping</div>
+                <div fxFlex align="end">
+                  <img class="pr-8 borderRightClass" matTooltip="Add" (click)="AddParameterItem()" src="assets/images/plus.png">
+                  <img class="pl-8 pr-16" matTooltip="Remove" (click)="RemoveParameterItem()" src="assets/images/remove.png">
+                </div>
+              </div>
+              <div class="borderTop mt-4 mb-12"></div>
               <table *ngIf="ParameterItemDataSource?.value?.length" mat-table [dataSource]="ParameterItemDataSource"
                 class="mat-elevation-z8" formArrayName="ParameterItems">
                 <tr mat-header-row *matHeaderRowDef="ParameterItemColumns">
@@ -113,15 +124,15 @@
                 </ng-container>
 
                 <ng-container matColumnDef="DataType">
-                    <th mat-header-cell *matHeaderCellDef> DataType </th>
-                    <td mat-cell *matCellDef="let row; let index = index" [formGroupName]="index" class="pl-8">
-                      <input matInput formControlName="DataType">
-                      <span class="pl-4 errorClass" *ngIf="ParameterFormGroup.get('ParameterItems').controls[index].get('DataType').touched &&
+                  <th mat-header-cell *matHeaderCellDef> DataType </th>
+                  <td mat-cell *matCellDef="let row; let index = index" [formGroupName]="index" class="pl-8">
+                    <input matInput formControlName="DataType">
+                    <span class="pl-4 errorClass" *ngIf="ParameterFormGroup.get('ParameterItems').controls[index].get('DataType').touched &&
               ParameterFormGroup.get('ParameterItems').controls[index].get('DataType').hasError('required')">
-                        *
-                      </span>
-                    </td>
-                  </ng-container>
+                      *
+                    </span>
+                  </td>
+                </ng-container>
 
                 <ng-container matColumnDef="DefaultValue">
                   <th mat-header-cell *matHeaderCellDef> Default Value </th>
@@ -152,3 +163,4 @@
       </mat-card>
     </div>
   </div>
+</div>

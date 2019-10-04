@@ -42,7 +42,7 @@
   .boldClass {
     font-weight: bold;
   }
-  .labelClass{
+  .labelClass {
     @extend .boldClass;
     margin-top: 8px;
   }
@@ -50,6 +50,12 @@
     cursor: pointer;
   }
   .uploadBtn {
+    min-width: 70px !important;
+    line-height: 28px !important;
+  }
+  .submitBtn {
+    background-color: #4fab6d;
+    color: white;
     min-width: 70px !important;
     line-height: 28px !important;
   }
