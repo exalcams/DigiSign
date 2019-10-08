@@ -5,13 +5,14 @@ import { Guid } from 'guid-typescript';
 import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
 import { FormGroup, FormBuilder, Validators, FormArray, AbstractControl } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatIconRegistry, MatSnackBar, MatDialog } from '@angular/material';
+import { MatIconRegistry, MatSnackBar, MatDialog, MatDialogConfig } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { HomeService } from 'app/services/home.service';
 import { SnackBarStatus } from 'app/notifications/notification-snack-bar/notification-snackbar-status-enum';
-import { Templates, Group } from 'app/models/template.model';
+import { Templates, Group, CreatedTemplate, TemplateParaMapping } from 'app/models/template.model';
 import { TemplateService } from 'app/services/template.service';
 import { BehaviorSubject } from 'rxjs';
+import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
 
 @Component({
   selector: 'app-template-creation',
@@ -31,10 +32,12 @@ export class TemplateCreationComponent implements OnInit {
   IsProgressBarVisibile: boolean;
   AllTemplates: Templates[] = [];
   AllGroups: Group[] = [];
+  SelectedCreatedTemplate: CreatedTemplate;
+  TemplateParaMappingList: TemplateParaMapping[];
   TemplateCreationFormGroup: FormGroup;
   fileToUpload: File;
   FileData: any;
-  ParameterFormGroup: FormGroup;
+  // TemplateCreationFormGroup: FormGroup;
   ParameterItemColumns: string[] = ['Variable', 'DataType', 'DefaultValue', 'Description'];
   ParameterItemFormArray: FormArray = this._formBuilder.array([]);
   ParameterItemDataSource = new BehaviorSubject<AbstractControl[]>([]);
@@ -50,6 +53,7 @@ export class TemplateCreationComponent implements OnInit {
   ) {
     this.notificationSnackBarComponent = new NotificationSnackBarComponent(this.snackBar);
     this.IsProgressBarVisibile = false;
+    this.SelectedCreatedTemplate = new CreatedTemplate();
   }
 
   ngOnInit(): void {
@@ -72,15 +76,42 @@ export class TemplateCreationComponent implements OnInit {
       Description: ['', Validators.required],
       Entity: ['', Validators.required],
       Group: ['', Validators.required],
-    });
-
-    this.ParameterFormGroup = this._formBuilder.group({
       ParameterItems: this.ParameterItemFormArray
     });
+
+    // this.TemplateCreationFormGroup = this._formBuilder.group({
+    //   ParameterItems: this.ParameterItemFormArray
+    // });
 
     this.GetAllTemplates();
     this.GetAllGroups();
   }
+
+  ResetForm(): void {
+    this.TemplateCreationFormGroup.reset();
+    Object.keys(this.TemplateCreationFormGroup.controls).forEach(key => {
+      this.TemplateCreationFormGroup.get(key).markAsUntouched();
+    });
+  }
+  ResetControl(): void {
+    this.ResetParameterItems();
+    this.ResetForm();
+    this.SelectedCreatedTemplate = new CreatedTemplate();
+    this.TemplateParaMappingList = [];
+    this.fileToUpload = null;
+    this.FileData = null;
+  }
+
+  ClearFormArray = (formArray: FormArray) => {
+    while (formArray.length !== 0) {
+      formArray.removeAt(0);
+    }
+  }
+  ResetParameterItems(): void {
+    this.ClearFormArray(this.ParameterItemFormArray);
+    this.ParameterItemDataSource.next(this.ParameterItemFormArray.controls);
+  }
+
 
   GetAllTemplates(): void {
     this._templateService.GetAllTemplates().subscribe(
@@ -109,13 +140,11 @@ export class TemplateCreationComponent implements OnInit {
   }
 
   AddParameterItem(): void {
-    if (this.ParameterFormGroup.enabled) {
-      this.AddParameterItemFormGroup();
-    }
+    this.AddParameterItemFormGroup();
   }
 
   RemoveParameterItem(): void {
-    if (this.ParameterFormGroup.enabled) {
+    if (this.TemplateCreationFormGroup.enabled) {
       if (this.ParameterItemFormArray.length > 0) {
         this.ParameterItemFormArray.removeAt(this.ParameterItemFormArray.length - 1);
         this.ParameterItemDataSource.next(this.ParameterItemFormArray.controls);
@@ -144,5 +173,136 @@ export class TemplateCreationComponent implements OnInit {
       this.FileData = this.sanitizer.bypassSecurityTrustResourceUrl(fileURL);
     }
   }
+
+  SubmitClicked(): void {
+    if (this.TemplateCreationFormGroup.valid) {
+      if (!this.fileToUpload) {
+        this.notificationSnackBarComponent.openSnackBar('Please select a file', SnackBarStatus.danger);
+      }
+      else {
+        const ParameterItemsArry = this.TemplateCreationFormGroup.get('ParameterItems') as FormArray;
+        if (ParameterItemsArry.length <= 0) {
+          this.notificationSnackBarComponent.openSnackBar('Please add parameter mapping', SnackBarStatus.danger);
+        } else {
+          const Actiontype = 'Create';
+          const Catagory = 'Template';
+          this.OpenConfirmationDialog(Actiontype, Catagory);
+        }
+      }
+    } else {
+      this.ShowValidationErrors(this.TemplateCreationFormGroup);
+    }
+  }
+
+  OpenConfirmationDialog(Actiontype: string, Catagory: string): void {
+    const dialogConfig: MatDialogConfig = {
+      data: {
+        Actiontype: Actiontype,
+        Catagory: Catagory
+      },
+    };
+    const dialogRef = this.dialog.open(NotificationDialogComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe(
+      result => {
+        if (result) {
+          if (Actiontype === 'Create') {
+            this.CreateTemplate();
+            // console.log('valid');
+          }
+          else if (Actiontype === 'Approve') {
+            // this.ApproveHeader();
+          }
+        }
+      });
+  }
+  ShowValidationErrors(formGroup: FormGroup): void {
+    Object.keys(formGroup.controls).forEach(key => {
+      if (!formGroup.get(key).valid) {
+        console.log(key);
+      }
+      formGroup.get(key).markAsTouched();
+      formGroup.get(key).markAsDirty();
+      if (formGroup.get(key) instanceof FormArray) {
+        const FormArrayControls = formGroup.get(key) as FormArray;
+        Object.keys(FormArrayControls.controls).forEach(key1 => {
+          if (FormArrayControls.get(key1) instanceof FormGroup) {
+            const FormGroupControls = FormArrayControls.get(key1) as FormGroup;
+            Object.keys(FormGroupControls.controls).forEach(key2 => {
+              FormGroupControls.get(key2).markAsTouched();
+              FormGroupControls.get(key2).markAsDirty();
+              if (!FormGroupControls.get(key2).valid) {
+                console.log(key2);
+              }
+            });
+          } else {
+            FormArrayControls.get(key1).markAsTouched();
+            FormArrayControls.get(key1).markAsDirty();
+          }
+        });
+      }
+    });
+  }
+
+  CreateTemplate(): void {
+    this.GetHeaderValues();
+    this.IsProgressBarVisibile = true;
+    this._templateService.CreateTemplate(this.SelectedCreatedTemplate, this.fileToUpload).subscribe(
+      (data) => {
+        if (data) {
+          this.SelectedCreatedTemplate.TemplateID = data as number;
+          this.CreateTemplateParaMapping();
+        } else {
+          this.notificationSnackBarComponent.openSnackBar('Something went wrong', SnackBarStatus.danger);
+        }
+        this.IsProgressBarVisibile = false;
+      },
+      (err) => {
+        console.error(err);
+        this.IsProgressBarVisibile = false;
+        this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+      }
+    );
+  }
+
+  CreateTemplateParaMapping(): void {
+    this.GetParameterValues();
+    this.IsProgressBarVisibile = true;
+    this._templateService.CreateTemplateParaMapping(this.TemplateParaMappingList).subscribe(
+      (data) => {
+        this.notificationSnackBarComponent.openSnackBar('Template details updated successfully', SnackBarStatus.success);
+        this.IsProgressBarVisibile = false;
+        this.ResetControl();
+      },
+      (err) => {
+        console.error(err);
+        this.IsProgressBarVisibile = false;
+        this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+      }
+    );
+  }
+
+  GetHeaderValues(): void {
+    this.SelectedCreatedTemplate = new CreatedTemplate();
+    this.SelectedCreatedTemplate.TemplateType = this.TemplateCreationFormGroup.get('TemplateType').value;
+    this.SelectedCreatedTemplate.Description = this.TemplateCreationFormGroup.get('Description').value;
+    this.SelectedCreatedTemplate.Entity = this.TemplateCreationFormGroup.get('Entity').value;
+    this.SelectedCreatedTemplate.Group = this.TemplateCreationFormGroup.get('Group').value;
+    this.SelectedCreatedTemplate.CreatedBy = this.CurrentUserID.toString();
+  }
+
+  GetParameterValues(): void {
+    this.TemplateParaMappingList = [];
+    const HeaderApproversArr = this.TemplateCreationFormGroup.get('ParameterItems') as FormArray;
+    HeaderApproversArr.controls.forEach((x, i) => {
+      const headApp: TemplateParaMapping = new TemplateParaMapping();
+      headApp.TemplateID = this.SelectedCreatedTemplate.TemplateID;
+      headApp.Variable = x.get('Variable').value;
+      headApp.DataType = x.get('DataType').value;
+      headApp.DefaultValue = x.get('DefaultValue').value;
+      headApp.Description = x.get('Description').value;
+      this.TemplateParaMappingList.push(headApp);
+    });
+  }
+
 
 }

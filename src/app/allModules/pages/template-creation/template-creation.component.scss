@@ -59,4 +59,20 @@
     min-width: 70px !important;
     line-height: 28px !important;
   }
+  .errorClass {
+    color: red !important;
+  }
+
+  .role-side-bar {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    .sidenav-content {
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+  .mat-form-field-wrapper {
+    padding-bottom: 0.6em !important;
+  }
 }
