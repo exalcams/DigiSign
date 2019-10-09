@@ -29,13 +29,15 @@
                 </div>
                 <div fxFlex fxLayout>
                   <div class="labelClass" fxFlex="30" fxLayoutAlign="end start">Template Upload </div>
-                  <div fxFlex="70" class="mx-12">
+                  <div fxFlex="25" class="mx-12">
                     <button class="accent uploadBtn" mat-raised-button (click)="fileInput1.click()">
                       Browse
                     </button>
                     <input hidden type="file" accept="application/pdf" #fileInput1 id="file"
-                      (change)="handleFileInput($event,index)" />
+                      (change)="handleFileInput($event)" />
                   </div>
+                  <div fxFlex="45" fxLayoutAlign="start start" class="mt-8">
+                    {{fileToUpload?fileToUpload.name:'No file chosen'}}</div>
                 </div>
               </div>
               <div fxFlex="60" fxLayout>
@@ -96,68 +98,75 @@
               </div>
             </div>
             <div fxFlex="49.9" class="role-side-bar">
-              <div class="sidenav-content py-12" fusePerfectScrollbar fxFlex>
-                <div fxLayout="row">
-                  <div fxFlex class="boldClass pl-12">Parameter mapping</div>
-                  <div fxFlex align="end">
-                    <img class="pr-8 borderRightClass" matTooltip="Add" (click)="AddParameterItem()"
-                      src="assets/images/plus.png">
-                    <img class="pl-8 pr-16" matTooltip="Remove" (click)="RemoveParameterItem()"
-                      src="assets/images/remove.png">
+              <div class="sidenav-content" fusePerfectScrollbar fxFlex>
+                <mat-card class="p-0 m-20 mat-elevation-z8">
+                  <div fxLayout="row" class="pt-8">
+                    <div fxFlex class="boldClass pl-12">Parameter mapping</div>
+                    <div fxFlex align="end">
+                      <img class="pr-8 borderRightClass" matTooltip="Add" (click)="AddParameterItem()"
+                        src="assets/images/plus.png">
+                      <img class="pl-8 pr-16" matTooltip="Remove" (click)="RemoveParameterItem()"
+                        src="assets/images/remove.png">
+                    </div>
                   </div>
-                </div>
-                <div fxLayout="row" class="borderTop mt-4 mb-12"></div>
-                <table *ngIf="TemplateCreationFormGroup.get('ParameterItems').length" mat-table
-                  [dataSource]="ParameterItemDataSource" class="mat-elevation-z8" formArrayName="ParameterItems">
-                  <tr mat-header-row *matHeaderRowDef="ParameterItemColumns; sticky: true">
-                  </tr>
-                  <tr mat-row *matRowDef="let row;let i = index; columns: ParameterItemColumns;"></tr>
+                  <div fxLayout="row" class="borderTop mt-4"></div>
+                  <table *ngIf="ParameterItemDataSource?.value?.length" mat-table
+                    [dataSource]="ParameterItemDataSource" class="mat-elevation-z8" formArrayName="ParameterItems">
+                    <tr mat-header-row *matHeaderRowDef="ParameterItemColumns; sticky: true">
+                    </tr>
+                    <tr mat-row *matRowDef="let row;let i = index; columns: ParameterItemColumns;"></tr>
 
-                  <ng-container matColumnDef="Variable">
-                    <th mat-header-cell *matHeaderCellDef> Variable </th>
-                    <td mat-cell *matCellDef="let row; let index = index" [formGroupName]="index">
-                      <input matInput formControlName="Variable">
-                      <span class="pl-4 errorClass" *ngIf="TemplateCreationFormGroup.get('ParameterItems').controls[index].get('Variable').touched &&
-            TemplateCreationFormGroup.get('ParameterItems').controls[index].get('Variable').hasError('required')">
-                        *
-                      </span>
-                    </td>
-                  </ng-container>
+                    <ng-container matColumnDef="Variable">
+                      <th mat-header-cell *matHeaderCellDef class="boldItalicClass"> Variable </th>
+                      <td mat-cell *matCellDef="let row; let index = index" [formGroupName]="index">
+                        <input matInput formControlName="Variable">
+                        <span class="pl-4 errorClass"
+                          *ngIf="TemplateCreationFormGroup.get('ParameterItems').controls[index].get('Variable').touched &&
+                  TemplateCreationFormGroup.get('ParameterItems').controls[index].get('Variable').hasError('required')">
+                          *
+                        </span>
+                      </td>
+                    </ng-container>
 
-                  <ng-container matColumnDef="DataType">
-                    <th mat-header-cell *matHeaderCellDef> DataType </th>
-                    <td mat-cell *matCellDef="let row; let index = index" [formGroupName]="index" class="pl-8">
-                      <input matInput formControlName="DataType">
-                      <span class="pl-4 errorClass" *ngIf="TemplateCreationFormGroup.get('ParameterItems').controls[index].get('DataType').touched &&
-                TemplateCreationFormGroup.get('ParameterItems').controls[index].get('DataType').hasError('required')">
-                        *
-                      </span>
-                    </td>
-                  </ng-container>
+                    <ng-container matColumnDef="DataType">
+                      <th mat-header-cell *matHeaderCellDef class="boldItalicClass"> DataType </th>
+                      <td mat-cell *matCellDef="let row; let index = index" [formGroupName]="index" class="pl-8">
+                        <input matInput formControlName="DataType">
+                        <span class="pl-4 errorClass"
+                          *ngIf="TemplateCreationFormGroup.get('ParameterItems').controls[index].get('DataType').touched &&
+                      TemplateCreationFormGroup.get('ParameterItems').controls[index].get('DataType').hasError('required')">
+                          *
+                        </span>
+                      </td>
+                    </ng-container>
 
-                  <ng-container matColumnDef="DefaultValue">
-                    <th mat-header-cell *matHeaderCellDef> Default Value </th>
-                    <td mat-cell *matCellDef="let row; let index = index" [formGroupName]="index" class="pl-8">
-                      <input matInput formControlName="DefaultValue">
-                      <span class="pl-4 errorClass" *ngIf="TemplateCreationFormGroup.get('ParameterItems').controls[index].get('DefaultValue').touched &&
-            TemplateCreationFormGroup.get('ParameterItems').controls[index].get('DefaultValue').hasError('required')">
-                        *
-                      </span>
-                    </td>
-                  </ng-container>
+                    <ng-container matColumnDef="DefaultValue">
+                      <th mat-header-cell *matHeaderCellDef class="boldItalicClass"> Default Value </th>
+                      <td mat-cell *matCellDef="let row; let index = index" [formGroupName]="index" class="pl-8">
+                        <input matInput formControlName="DefaultValue">
+                        <span class="pl-4 errorClass"
+                          *ngIf="TemplateCreationFormGroup.get('ParameterItems').controls[index].get('DefaultValue').touched &&
+                  TemplateCreationFormGroup.get('ParameterItems').controls[index].get('DefaultValue').hasError('required')">
+                          *
+                        </span>
+                      </td>
+                    </ng-container>
 
-                  <ng-container matColumnDef="Description">
-                    <th mat-header-cell *matHeaderCellDef> Description </th>
-                    <td mat-cell *matCellDef="let row; let index = index" [formGroupName]="index">
-                      <input matInput formControlName="Description">
-                      <span class="pl-4 errorClass" *ngIf="TemplateCreationFormGroup.get('ParameterItems').controls[index].get('Description').touched &&
-              TemplateCreationFormGroup.get('ParameterItems').controls[index].get('Description').hasError('required')">
-                        *
-                      </span>
-                    </td>
-                  </ng-container>
+                    <ng-container matColumnDef="Description">
+                      <th mat-header-cell *matHeaderCellDef class="boldItalicClass"> Description </th>
+                      <td mat-cell *matCellDef="let row; let index = index" [formGroupName]="index">
+                        <input matInput formControlName="Description">
+                        <span class="pl-4 errorClass"
+                          *ngIf="TemplateCreationFormGroup.get('ParameterItems').controls[index].get('Description').touched &&
+                    TemplateCreationFormGroup.get('ParameterItems').controls[index].get('Description').hasError('required')">
+                          *
+                        </span>
+                      </td>
+                    </ng-container>
 
-                </table>
+                  </table>
+
+                </mat-card>
               </div>
             </div>
             <div fxFlex="0.1">

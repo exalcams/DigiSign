@@ -42,6 +42,10 @@
   .boldClass {
     font-weight: bold;
   }
+  .boldItalicClass{
+    @extend .boldClass;
+    font-style: italic;
+  }
   .labelClass {
     @extend .boldClass;
     margin-top: 8px;
@@ -75,4 +79,11 @@
   .mat-form-field-wrapper {
     padding-bottom: 0.6em !important;
   }
+
+  // table {
+  //   th {
+  //     font-weight: bold;
+  //     font-style: italic;
+  //   }
+  // }
 }

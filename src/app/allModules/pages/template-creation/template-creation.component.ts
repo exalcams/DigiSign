@@ -165,7 +165,7 @@ export class TemplateCreationComponent implements OnInit {
     this.ParameterItemDataSource.next(this.ParameterItemFormArray.controls);
   }
 
-  handleFileInput(evt, index: number): void {
+  handleFileInput(evt): void {
     if (evt.target.files && evt.target.files.length > 0) {
       this.fileToUpload = evt.target.files[0];
       const file = new Blob([this.fileToUpload], { type: this.fileToUpload.type });
@@ -300,6 +300,7 @@ export class TemplateCreationComponent implements OnInit {
       headApp.DataType = x.get('DataType').value;
       headApp.DefaultValue = x.get('DefaultValue').value;
       headApp.Description = x.get('Description').value;
+      headApp.CreatedBy = this.CurrentUserID.toString();
       this.TemplateParaMappingList.push(headApp);
     });
   }
