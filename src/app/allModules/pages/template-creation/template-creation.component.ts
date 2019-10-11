@@ -38,7 +38,8 @@ export class TemplateCreationComponent implements OnInit {
   fileToUpload: File;
   FileData: any;
   // TemplateCreationFormGroup: FormGroup;
-  ParameterItemColumns: string[] = ['Variable', 'DataType', 'DefaultValue', 'Description'];
+  DataTypeList: string[] = [];
+  ParameterItemColumns: string[] = ['Variable', 'DataType', 'DefaultValue', 'Description', 'Action'];
   ParameterItemFormArray: FormArray = this._formBuilder.array([]);
   ParameterItemDataSource = new BehaviorSubject<AbstractControl[]>([]);
 
@@ -71,6 +72,7 @@ export class TemplateCreationComponent implements OnInit {
     } else {
       this._router.navigate(['/auth/login']);
     }
+    this.DataTypeList = ['int', 'double', 'string'];
     this.TemplateCreationFormGroup = this._formBuilder.group({
       TemplateType: ['', Validators.required],
       Description: ['', Validators.required],
@@ -143,10 +145,10 @@ export class TemplateCreationComponent implements OnInit {
     this.AddParameterItemFormGroup();
   }
 
-  RemoveParameterItem(): void {
+  RemoveParameterItem(index: number): void {
     if (this.TemplateCreationFormGroup.enabled) {
       if (this.ParameterItemFormArray.length > 0) {
-        this.ParameterItemFormArray.removeAt(this.ParameterItemFormArray.length - 1);
+        this.ParameterItemFormArray.removeAt(index);
         this.ParameterItemDataSource.next(this.ParameterItemFormArray.controls);
       } else {
         this.notificationSnackBarComponent.openSnackBar('no items to delete', SnackBarStatus.warning);
