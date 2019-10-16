@@ -45,11 +45,15 @@
         </div>
         <div fxFlex="34.9" class="role-side-bar">
           <div class="sidenav-content" fusePerfectScrollbar fxFlex>
-            <div class="bottomBorder mt-24" *ngIf="!IsUpdateActionType">
-              <span class="mx-8 mb-4 title">Manual Upload</span>
+            <div class="bottomBorder mt-24 pb-4" *ngIf="!IsUpdateActionType">
+              <mat-radio-group [(ngModel)]="DocumentCreationChoice" (change)="DocumentCreationChoiceChange()">
+                <mat-radio-button value="1" class="mx-8">Manual Upload</mat-radio-button>
+                <mat-radio-button value="2" class="mx-8">With Template</mat-radio-button>
+              </mat-radio-group>
+              <!-- <span class="mx-8 mb-4 title">Manual Upload</span> -->
             </div>
             <div *ngIf="!IsUpdateActionType">
-              <form name="form" [formGroup]="HeaderFormGroup" class="m-8">
+              <form *ngIf="DocumentCreationChoice==='1'" name="form" [formGroup]="HeaderFormGroup" class="m-8">
                 <div fxLayout class="my-12 mx-8">
                   <div fxFlex class="mr-8">
                     <div fxLayout="row" fxLayoutAlign="start">
@@ -89,7 +93,47 @@
                     </div>
                   </div>
                 </div>
-                <div class="bottomBorder mx-48"></div>
+              </form>
+              <form *ngIf="DocumentCreationChoice==='2'" name="form" [formGroup]="HeaderTemplateFormGroup" class="m-8">
+                <div fxLayout class="my-12 mx-8">
+                  <div fxFlex class="mr-8">
+                    <div fxLayout="row" fxLayoutAlign="start">
+                      <div class="labelClass" fxFlex="30" fxLayoutAlign="end start">Template Type </div>
+                      <mat-form-field appearance="outline" fxFlex="70" class="mx-12">
+                        <mat-select style="min-width: 150px" (selectionChange)="TemplateSelectionChanged($event)"
+                          matInput formControlName="TemplateType">
+                          <mat-option *ngFor="let temp of AllTemplates" [value]="temp.TemplateType">
+                            {{temp.TemplateType}}
+                          </mat-option>
+                        </mat-select>
+                        <mat-error
+                          *ngIf="HeaderTemplateFormGroup.get('TemplateType').touched &&  HeaderTemplateFormGroup.get('TemplateType').hasError('required')">
+                          Template type is required
+                        </mat-error>
+                      </mat-form-field>
+                    </div>
+                    <!-- <div fxLayout="row wrap"> -->
+                      <div fxLayout="row" formArrayName="TemplateParameters"
+                        *ngFor="let pars of HeaderTemplateFormGroup.get('TemplateParameters').controls; let i = index">
+                        <div [formGroupName]="i" fxFlex fxLayout>
+                          <div class="labelClass" fxFlex="30" fxLayoutAlign="end start">{{AllTemplateParaMappings[i].Variable}}</div>
+                          <mat-form-field fxFlex="70" appearance="outline" class="mx-12">
+                            <input matInput [placeholder]="AllTemplateParaMappings[i].Variable"
+                              formControlName="VariableName">
+                            <mat-error
+                              *ngIf="HeaderTemplateFormGroup.get('TemplateParameters').controls[i].get('VariableName').touched &&
+                              HeaderTemplateFormGroup.get('TemplateParameters').controls[i].get('VariableName').hasError('required')">
+                              {{AllTemplateParaMappings[i].Variable}} is required
+                            </mat-error>
+                          </mat-form-field>
+                        </div>
+                      </div>
+                    <!-- </div> -->
+                  </div>
+                </div>
+              </form>
+              <div class="bottomBorder mx-48"></div>
+              <form name="form" [formGroup]="HeaderApproverFormGroup" class="m-8">
                 <div class="mt-16 m-8">
                   <div fxLayout="row">
                     <div fxFlex class="p-8 sub-Title">Workflow Assignment </div>
@@ -118,8 +162,9 @@
                           {{appr.UserName}}
                         </mat-option>
                       </mat-select>
-                      <span class="pl-4 errorClass" *ngIf="HeaderFormGroup.get('HeaderApprovers').controls[index].get('Approvers').touched &&
-              HeaderFormGroup.get('HeaderApprovers').controls[index].get('Approvers').hasError('required')">
+                      <span class="pl-4 errorClass"
+                        *ngIf="HeaderApproverFormGroup.get('HeaderApprovers').controls[index].get('Approvers').touched &&
+                      HeaderApproverFormGroup.get('HeaderApprovers').controls[index].get('Approvers').hasError('required')">
                         *
                       </span>
                     </td>
@@ -129,8 +174,9 @@
                     <th mat-header-cell *matHeaderCellDef> Level </th>
                     <td mat-cell *matCellDef="let row; let index = index" [formGroupName]="index" class="pl-8">
                       <input matInput formControlName="Level" readonly>
-                      <span class="pl-4 errorClass" *ngIf="HeaderFormGroup.get('HeaderApprovers').controls[index].get('Level').touched &&
-              HeaderFormGroup.get('HeaderApprovers').controls[index].get('Level').hasError('required')">
+                      <span class="pl-4 errorClass"
+                        *ngIf="HeaderApproverFormGroup.get('HeaderApprovers').controls[index].get('Level').touched &&
+                      HeaderApproverFormGroup.get('HeaderApprovers').controls[index].get('Level').hasError('required')">
                         *
                       </span>
                     </td>
@@ -211,7 +257,8 @@
                         <mat-form-field appearance="outline" fxFlex="70" class="mt-4">
                           <textarea matInput cdkTextareaAutosize cdkAutosizeMinRows="5" placeholder="Comments"
                             formControlName="Comments" required></textarea>
-                          <mat-error *ngIf="ApprovalFormGroup.get('Comments').touched && ApprovalFormGroup.get('Comments').hasError('required')">
+                          <mat-error
+                            *ngIf="ApprovalFormGroup.get('Comments').touched && ApprovalFormGroup.get('Comments').hasError('required')">
                             Comments is required
                           </mat-error>
                         </mat-form-field>

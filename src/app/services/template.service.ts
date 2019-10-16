@@ -65,4 +65,9 @@ export class TemplateService {
       .pipe(catchError(this.errorHandler));
   }
 
+  GetTemplateParaMappingsByTemplate(TemplateType: string): Observable<TemplateParaMapping[] | string> {
+    return this._httpClient.get<TemplateParaMapping[]>(`${this.baseAddress}api/Template/GetTemplateParaMappingsByTemplate?TemplateType=${TemplateType}`)
+      .pipe(catchError(this.errorHandler));
+  }
+
 }

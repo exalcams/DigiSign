@@ -12,6 +12,8 @@ import { HeaderAndApproverList, AssignedApprover, Header, HeaderView, Approver, 
 import { FormArray, AbstractControl, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
+import { Templates, TemplateParaMapping } from 'app/models/template.model';
+import { TemplateService } from 'app/services/template.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -33,6 +35,9 @@ export class DashboardComponent implements OnInit {
   AllHeaders: HeaderView[] = [];
   AssignedApproversList: AssignedApprover[];
   HeaderFormGroup: FormGroup;
+  HeaderTemplateFormGroup: FormGroup;
+  TemplateParameterFormArray: FormArray = this._formBuilder.array([]);
+  HeaderApproverFormGroup: FormGroup;
   HeaderApproverColumns: string[] = ['Approvers', 'Level'];
   HeaderApproverFormArray: FormArray = this._formBuilder.array([]);
   HeaderApproverDataSource = new BehaviorSubject<AbstractControl[]>([]);
@@ -41,6 +46,9 @@ export class DashboardComponent implements OnInit {
   FileData: any;
   IsUpdateActionType = false;
   ApprovalFormGroup: FormGroup;
+  DocumentCreationChoice = '1';
+  AllTemplates: Templates[] = [];
+  AllTemplateParaMappings: TemplateParaMapping[] = [];
   // fileToUploadList: File[] = [];
   constructor(
     private _router: Router,
@@ -49,6 +57,7 @@ export class DashboardComponent implements OnInit {
     public snackBar: MatSnackBar,
     private _formBuilder: FormBuilder,
     private _homeService: HomeService,
+    private _templateService: TemplateService,
     private dialog: MatDialog,
   ) {
     this.SelectedHead = new HeaderView();
@@ -66,7 +75,7 @@ export class DashboardComponent implements OnInit {
       this.CurrentUserID = this.authenticationDetails.userID;
       this.CurrentUserRole = this.authenticationDetails.userRole;
       this.MenuItems = this.authenticationDetails.menuItemNames.split(',');
-      if (this.MenuItems.indexOf('Dashboard') < 0) {
+      if (this.MenuItems.indexOf('DocumentCreation') < 0) {
         this.notificationSnackBarComponent.openSnackBar('You do not have permission to visit this page', SnackBarStatus.danger);
         this._router.navigate(['/auth/login']);
       }
@@ -77,32 +86,68 @@ export class DashboardComponent implements OnInit {
       DocName: ['', Validators.required],
       DocType: ['', Validators.required],
       FileType: ['', Validators.required],
+    });
+    this.HeaderTemplateFormGroup = this._formBuilder.group({
+      TemplateType: ['', Validators.required],
+      TemplateParameters: this.TemplateParameterFormArray
+    });
+    this.HeaderApproverFormGroup = this._formBuilder.group({
       HeaderApprovers: this.HeaderApproverFormArray
     });
     this.ApprovalFormGroup = this._formBuilder.group({
       Comments: ['', Validators.required]
     });
+    this.GetAllTemplates();
     this.GetAllApproverViews();
     this.GetAllHeadersByUserName();
   }
 
   ResetForm(): void {
+    this.ResetHeaderFormGroup();
+    this.ResetHeaderTemplateFormGroup();
+    this.ResetApprovalFormGroup();
+  }
+  ResetHeaderFormGroup(): void {
     this.HeaderFormGroup.reset();
     Object.keys(this.HeaderFormGroup.controls).forEach(key => {
       this.HeaderFormGroup.get(key).markAsUntouched();
     });
+  }
+  ResetHeaderTemplateFormGroup(): void {
+    this.HeaderTemplateFormGroup.reset();
+    Object.keys(this.HeaderTemplateFormGroup.controls).forEach(key => {
+      this.HeaderTemplateFormGroup.get(key).markAsUntouched();
+    });
+  }
+
+  ResetApprovalFormGroup(): void {
     this.ApprovalFormGroup.reset();
     Object.keys(this.ApprovalFormGroup.controls).forEach(key => {
       this.ApprovalFormGroup.get(key).markAsUntouched();
     });
   }
+
   ResetControl(): void {
     this.ResetHeaderApprovers();
+    this.ResetTemplateParameters();
     this.ResetForm();
+    this.DocumentCreationChoice = '1';
     this.SelectedHead = new HeaderView();
     this.fileToUpload = null;
     this.FileData = null;
     this.IsUpdateActionType = false;
+    this.EnableAllApprovers();
+  }
+
+  ResetControlForDocumentCreation(): void {
+    if (this.DocumentCreationChoice === '1') {
+      this.ResetHeaderTemplateFormGroup();
+    } else {
+      this.ResetHeaderFormGroup();
+    }
+    this.ResetHeaderApprovers();
+    this.ResetTemplateParameters();
+    this.ResetApprovalFormGroup();
     this.EnableAllApprovers();
   }
 
@@ -111,9 +156,24 @@ export class DashboardComponent implements OnInit {
       formArray.removeAt(0);
     }
   }
+  ResetTemplateParameters(): void {
+    this.ClearFormArray(this.TemplateParameterFormArray);
+  }
   ResetHeaderApprovers(): void {
     this.ClearFormArray(this.HeaderApproverFormArray);
     this.HeaderApproverDataSource.next(this.HeaderApproverFormArray.controls);
+  }
+  GetAllTemplates(): void {
+    this._templateService.GetAllTemplates().subscribe(
+      (data) => {
+        if (data) {
+          this.AllTemplates = data as Templates[];
+        }
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
   }
   GetAllApproverViews(): void {
     this.IsProgressBarVisibile = true;
@@ -237,6 +297,38 @@ export class DashboardComponent implements OnInit {
     );
   }
 
+  DocumentCreationChoiceChange(): void {
+    this.ResetControlForDocumentCreation();
+  }
+
+  TemplateSelectionChanged(event): void {
+    const TemplateValue = event.value;
+    this.AllTemplateParaMappings = [];
+    this.ClearFormArray(this.TemplateParameterFormArray);
+    this._templateService.GetTemplateParaMappingsByTemplate(TemplateValue).subscribe(
+      (data) => {
+        if (data) {
+          this.AllTemplateParaMappings = data as TemplateParaMapping[];
+          console.log(this.AllTemplateParaMappings);
+          this.AllTemplateParaMappings.forEach(x => {
+            this.InsertTemplateParameters(x);
+          });
+        }
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
+  }
+
+  InsertTemplateParameters(params: TemplateParaMapping): void {
+    // const VariableName = params.Variable;
+    const row = this._formBuilder.group({
+      VariableName: [params.DefaultValue, Validators.required],
+    });
+    this.TemplateParameterFormArray.push(row);
+  }
+
   InsertHeaderApproverFormGroup(approver: AssignedApprover): void {
     const row = this._formBuilder.group({
       Approvers: [approver.Approvers, Validators.required],
@@ -301,17 +393,40 @@ export class DashboardComponent implements OnInit {
   }
 
   AssignApproversClicked(): void {
-    if (this.HeaderFormGroup.valid) {
-      if (!this.fileToUpload) {
-        this.notificationSnackBarComponent.openSnackBar('Please select a file', SnackBarStatus.danger);
+    if (this.DocumentCreationChoice === '1') {
+      if (this.HeaderFormGroup.valid) {
+        if (this.HeaderApproverFormGroup.valid) {
+          if (!this.fileToUpload) {
+            this.notificationSnackBarComponent.openSnackBar('Please select a file', SnackBarStatus.danger);
+          } else {
+            const Actiontype = 'Create';
+            const Catagory = 'Documents';
+            this.OpenConfirmationDialog(Actiontype, Catagory);
+          }
+        } else {
+          this.ShowValidationErrors(this.HeaderApproverFormGroup);
+        }
       } else {
-        const Actiontype = 'Create';
-        const Catagory = 'Documents';
-        this.OpenConfirmationDialog(Actiontype, Catagory);
+        this.ShowValidationErrors(this.HeaderFormGroup);
       }
     } else {
-      this.ShowValidationErrors(this.HeaderFormGroup);
+      if (this.HeaderTemplateFormGroup.valid) {
+        if (this.HeaderApproverFormGroup.valid) {
+          if (!this.fileToUpload) {
+            this.notificationSnackBarComponent.openSnackBar('Please select a file', SnackBarStatus.danger);
+          } else {
+            const Actiontype = 'Create';
+            const Catagory = 'Documents';
+            this.OpenConfirmationDialog(Actiontype, Catagory);
+          }
+        } else {
+          this.ShowValidationErrors(this.HeaderApproverFormGroup);
+        }
+      } else {
+        this.ShowValidationErrors(this.HeaderTemplateFormGroup);
+      }
     }
+
   }
 
   OpenConfirmationDialog(Actiontype: string, Catagory: string): void {
@@ -326,7 +441,7 @@ export class DashboardComponent implements OnInit {
       result => {
         if (result) {
           if (Actiontype === 'Create') {
-            this.CreateHeader();
+            this.CreateDocumentHeader();
           }
           else if (Actiontype === 'Approve') {
             this.ApproveHeader();
@@ -335,25 +450,29 @@ export class DashboardComponent implements OnInit {
       });
   }
 
-  CreateHeader(): void {
-    this.GetHeaderValues();
-    this.IsProgressBarVisibile = true;
-    this._homeService.CreateHeader(this.SelectedHead, this.fileToUpload).subscribe(
-      (data) => {
-        if (data) {
-          this.SelectedHead.DOCID = data as number;
-          this.AssignApprovers();
-        } else {
-          this.notificationSnackBarComponent.openSnackBar('Something went wrong', SnackBarStatus.danger);
+  CreateDocumentHeader(): void {
+    if (this.DocumentCreationChoice === '1') {
+      this.GetHeaderValues();
+      this.IsProgressBarVisibile = true;
+      this._homeService.CreateHeader(this.SelectedHead, this.fileToUpload).subscribe(
+        (data) => {
+          if (data) {
+            this.SelectedHead.DOCID = data as number;
+            this.AssignApprovers();
+          } else {
+            this.notificationSnackBarComponent.openSnackBar('Something went wrong', SnackBarStatus.danger);
+          }
+          this.IsProgressBarVisibile = false;
+        },
+        (err) => {
+          console.error(err);
+          this.IsProgressBarVisibile = false;
+          this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
         }
-        this.IsProgressBarVisibile = false;
-      },
-      (err) => {
-        console.error(err);
-        this.IsProgressBarVisibile = false;
-        this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
-      }
-    );
+      );
+    } else {
+
+    }
   }
 
   AssignApprovers(): void {
@@ -384,7 +503,7 @@ export class DashboardComponent implements OnInit {
 
   GetHeaderApproverValues(): void {
     this.AssignedApproversList = [];
-    const HeaderApproversArr = this.HeaderFormGroup.get('HeaderApprovers') as FormArray;
+    const HeaderApproversArr = this.HeaderApproverFormGroup.get('HeaderApprovers') as FormArray;
     HeaderApproversArr.controls.forEach((x, i) => {
       const headApp: AssignedApprover = new AssignedApprover();
       headApp.DOCID = this.SelectedHead.DOCID;

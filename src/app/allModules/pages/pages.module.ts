@@ -57,7 +57,7 @@ import { TemplateCreationComponent } from './template-creation/template-creation
 
 const routes = [
     {
-        path: 'dashboard',
+        path: 'documentCreation',
         component: DashboardComponent
     },
     {

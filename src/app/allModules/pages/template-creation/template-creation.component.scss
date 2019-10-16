@@ -85,6 +85,12 @@
   .imgClass {
     height: 20px;
   }
+  .ProgressBarPostion1 {
+    position: absolute !important;
+    top: 350px;
+    z-index: 100;
+    left: 55%;
+  }
 
   // table {
   //   th {

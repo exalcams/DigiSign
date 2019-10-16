@@ -121,7 +121,7 @@ export class LoginComponent implements OnInit {
     // } else {
     //   this._router.navigate(['pages/dashboard']);
     // }
-    this._router.navigate(['pages/dashboard']);
+    this._router.navigate(['pages/documentCreation']);
   }
 
   OpenChangePasswordDialog(data: AuthenticationDetails): void {
@@ -190,15 +190,15 @@ export class LoginComponent implements OnInit {
       // console.log(this.MenuItems);
     } else {
     }
-    if (this.MenuItems.indexOf('Dashboard') >= 0) {
+    if (this.MenuItems.indexOf('DocumentCreation') >= 0) {
       this.children.push(
         {
-          id: 'dashboard',
-          title: 'Dashboard',
+          id: 'documentCreation',
+          title: 'Document Creation',
           translate: 'NAV.SAMPLE.TITLE',
           type: 'item',
           icon: 'dashboard',
-          url: '/pages/dashboard',
+          url: '/pages/documentCreation',
         }
       );
     }
