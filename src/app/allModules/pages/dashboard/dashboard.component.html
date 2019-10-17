@@ -21,7 +21,7 @@
                 </div>
                 <span class="yellowBottomBorder ml-12"></span>
                 <div fxLayout fxLayoutAlign="center" class="borderClass m-8" *ngFor="let head of AllHeaders">
-                  <div fxFlex="15" fxLayoutAlign="start center" class="borderRightClass pt-12">
+                  <div fxFlex="15" fxLayoutAlign="start center" class="borderRightClass">
                     <div class="mx-4">
                       <div class="round" (click)="loadSelectedHeader(head)">
                         <div class="round1" [style.background-color]="SelectedHead===head?'#2ecc71':'white'"></div>
@@ -30,8 +30,8 @@
                   </div>
                   <div fxFlex="85" class="p-12">
                     <div class="boldClass p-4">Doc. ID : #{{head.DOCID}}</div>
-                    <div class="p-4">Doc. Name : {{head.DocName}}</div>
-                    <div class="p-4">Doc. Type : {{head.DocType}}</div>
+                    <div *ngIf="head.DocName" class="p-4">Doc. Name : {{head.DocName}}</div>
+                    <div *ngIf="head.DocType" class="p-4">Doc. Type : {{head.DocType}}</div>
                   </div>
                 </div>
               </div>
@@ -216,9 +216,9 @@
                       <div class="BoldUnderLine p-4 pl-12" fxFlex align="center">DOC ID : #{{SelectedHead.DOCID}}</div>
                     </div>
                     <div fxFlex fxLayout fxLayoutAlign="space-between center">
-                      <div fxFlex class="p-4 pl-12">Doc. Name : <span class="UnderLine">{{SelectedHead.DocName}}</span>
+                      <div *ngIf="SelectedHead.DocName" fxFlex class="p-4 pl-12">Doc. Name : <span class="UnderLine">{{SelectedHead.DocName}}</span>
                       </div>
-                      <div fxFlex class="p-4 pr-12" align="end">Doc. Type : <span
+                      <div *ngIf="SelectedHead.DocType" fxFlex class="p-4 pr-12" align="end">Doc. Type : <span
                           class="UnderLine">{{SelectedHead.DocType}}</span></div>
                     </div>
                   </div>

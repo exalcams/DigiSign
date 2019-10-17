@@ -28,7 +28,7 @@ export class SignedDocumentComponent implements OnInit {
   IsProgressBarVisibile: boolean;
   AllSignedDocuments: SignedHeaderView[] = [];
   SignDocumentsDataSource: MatTableDataSource<SignedHeaderView>;
-  SignDocumentsColumns: string[] = ['DocName', 'DocType', 'FileType', 'NoOfApprover', 'LastApprover', 'LastApproverComment', 'LastApprovedOn', 'CreatedOn', 'View'];
+  SignDocumentsColumns: string[] = ['DOCID', 'DocName', 'DocType', 'FileType', 'NoOfApprover', 'LastApprover', 'LastApproverComment', 'LastApprovedOn', 'CreatedOn', 'View'];
   @ViewChild(MatPaginator) SignDocumentsPaginator: MatPaginator;
   @ViewChild(MatSort) SignDocumentsSort: MatSort;
 

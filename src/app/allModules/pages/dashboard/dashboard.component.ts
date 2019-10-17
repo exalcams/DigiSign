@@ -406,7 +406,7 @@ export class DashboardComponent implements OnInit {
   }
 
   DisableSelctedApprovers(): void {
-    const HeaderApproversArry = this.HeaderFormGroup.get('HeaderApprovers') as FormArray;
+    const HeaderApproversArry = this.HeaderApproverFormGroup.get('HeaderApprovers') as FormArray;
     HeaderApproversArry.controls.forEach((x, i) => {
       const value = x.get('Approvers').value;
       const SelectedApprover = this.AllApprovers.filter(y => y.UserName === value)[0];

@@ -7,6 +7,11 @@
         <div class="mat-elevation-z8 my-12 mx-12 normal" fxFlex>
           <table mat-table [dataSource]="SignDocumentsDataSource" matSort style="width:100%">
 
+            <ng-container matColumnDef="DOCID">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> Document ID </th>
+              <td mat-cell *matCellDef="let row"> {{row.DOCID}} </td>
+            </ng-container>
+
             <ng-container matColumnDef="DocName">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> Document name </th>
               <td mat-cell *matCellDef="let row"> {{row.DocName}} </td>
@@ -39,12 +44,12 @@
 
             <ng-container matColumnDef="LastApprovedOn">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> Approved On </th>
-              <td mat-cell *matCellDef="let row"> {{row.LastApprovedOn | date}} </td>
+              <td mat-cell *matCellDef="let row"> {{row.LastApprovedOn | date : 'dd/MM/yyyy h:mm:ss a'}} </td>
             </ng-container>
 
             <ng-container matColumnDef="CreatedOn">
               <th mat-header-cell *matHeaderCellDef mat-sort-header> Created On </th>
-              <td mat-cell *matCellDef="let row"> {{row.CreatedOn | date}} </td>
+              <td mat-cell *matCellDef="let row"> {{row.CreatedOn | date : 'dd/MM/yyyy'}} </td>
             </ng-container>
 
             <ng-container matColumnDef="View">
