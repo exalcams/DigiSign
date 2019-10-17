@@ -3,6 +3,7 @@ export class Header {
     DocName: string;
     DocType: string;
     FileType: string;
+    UploadedType: string;
     CurrentApprover: string;
     CreatedBy: string;
     CreatedOn: Date;
@@ -15,6 +16,7 @@ export class HeaderView {
     DocName: string;
     DocType: string;
     FileType: string;
+    UploadedType: string;
     CurrentApprover: string;
     CreatedBy: string;
     CreatedOn: Date;
@@ -28,6 +30,7 @@ export class SignedHeaderView {
     DocName: string;
     DocType: string;
     FileType: string;
+    UploadedType: string;
     NoOfApprover: number;
     LastApprover: string;
     LastApproverComment: string;
@@ -35,6 +38,20 @@ export class SignedHeaderView {
     CreatedOn: Date;
 
 }
+
+export class UserTemplateValue {
+    ID: number;
+    DOCID: number;
+    TemplateID: number;
+    Key: string;
+    Value: string;
+    CreatedBy: string;
+    CreatedOn: Date;
+    LastUpdatedBy: string;
+    LastUpdatedOn?: Date;
+    IsActive: boolean;
+}
+
 export class Approver {
     ID: number;
     UserName: string;

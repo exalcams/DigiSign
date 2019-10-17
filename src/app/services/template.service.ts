@@ -70,4 +70,11 @@ export class TemplateService {
       .pipe(catchError(this.errorHandler));
   }
 
+  GetTemplateDocumentByTemplate(TemplateType: string): Observable<Blob | string> {
+    return this._httpClient.get(`${this.baseAddress}api/Template/GetTemplateDocumentByTemplate?TemplateType=${TemplateType}`, {
+      responseType: 'blob',
+      headers: new HttpHeaders().append('Content-Type', 'application/json')
+    })
+      .pipe(catchError(this.errorHandler));
+  }
 }

@@ -5,7 +5,7 @@ import { _MatChipListMixinBase } from '@angular/material';
 import { AuthService } from './auth.service';
 import { catchError } from 'rxjs/operators';
 import { MenuApp, RoleWithApp, UserWithRole, UserNotification } from 'app/models/master';
-import { HeaderAndApproverList, AssignedApprover, Header, HeaderView, Approver, ApproverView, SignedHeaderView } from 'app/models/home.model';
+import { HeaderAndApproverList, AssignedApprover, Header, HeaderView, Approver, ApproverView, SignedHeaderView, UserTemplateValue } from 'app/models/home.model';
 
 @Injectable({
   providedIn: 'root'
@@ -70,6 +70,7 @@ export class HomeService {
     formData.append('DocName', header.DocName);
     formData.append('DocType', header.DocType);
     formData.append('FileType', header.FileType);
+    formData.append('UploadedType', header.UploadedType);
     formData.append('CreatedBy', header.CreatedBy);
 
     return this._httpClient.post<any>(`${this.baseAddress}api/Home/CreateHeader`,
@@ -80,6 +81,16 @@ export class HomeService {
       //   })
       // }
     ).pipe(catchError(this.errorHandler));
+  }
+
+  InsertUserTemplateValues(UserTemplateVal: UserTemplateValue[]): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}api/Home/InsertUserTemplateValues`,
+    UserTemplateVal, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    })
+      .pipe(catchError(this.errorHandler));
   }
 
   AssignApprovers(assignedApprovers: AssignedApprover[]): Observable<any> {

@@ -8,7 +8,7 @@ import { AuthenticationDetails } from 'app/models/master';
 import { fuseAnimations } from '@fuse/animations';
 import { Guid } from 'guid-typescript';
 import { HomeService } from 'app/services/home.service';
-import { HeaderAndApproverList, AssignedApprover, Header, HeaderView, Approver, ApproverView } from 'app/models/home.model';
+import { HeaderAndApproverList, AssignedApprover, Header, HeaderView, Approver, ApproverView, UserTemplateValue } from 'app/models/home.model';
 import { FormArray, AbstractControl, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
@@ -34,6 +34,7 @@ export class DashboardComponent implements OnInit {
   AllApprovers: ApproverView[] = [];
   AllHeaders: HeaderView[] = [];
   AssignedApproversList: AssignedApprover[];
+  UserTemplateValueList: UserTemplateValue[];
   HeaderFormGroup: FormGroup;
   HeaderTemplateFormGroup: FormGroup;
   TemplateParameterFormArray: FormArray = this._formBuilder.array([]);
@@ -149,6 +150,10 @@ export class DashboardComponent implements OnInit {
     this.ResetTemplateParameters();
     this.ResetApprovalFormGroup();
     this.EnableAllApprovers();
+    this.SelectedHead = new HeaderView();
+    this.fileToUpload = null;
+    this.FileData = null;
+    this.IsUpdateActionType = false;
   }
 
   ClearFormArray = (formArray: FormArray) => {
@@ -235,6 +240,7 @@ export class DashboardComponent implements OnInit {
       this.IsUpdateActionType = true;
       this.SelectedHead = head;
       this.AssignedApproversList = [];
+      this.UserTemplateValueList = [];
       this.GetHeaderDocumentByDocID();
       this.GetAssignedApproversByDocID();
     }
@@ -305,11 +311,16 @@ export class DashboardComponent implements OnInit {
     const TemplateValue = event.value;
     this.AllTemplateParaMappings = [];
     this.ClearFormArray(this.TemplateParameterFormArray);
+    this.GetTemplateParaMappingsByTemplate(TemplateValue);
+    this.GetTemplateDocumentByTemplate(TemplateValue);
+  }
+
+  GetTemplateParaMappingsByTemplate(TemplateValue: string): void {
     this._templateService.GetTemplateParaMappingsByTemplate(TemplateValue).subscribe(
       (data) => {
         if (data) {
           this.AllTemplateParaMappings = data as TemplateParaMapping[];
-          console.log(this.AllTemplateParaMappings);
+          // console.log(this.AllTemplateParaMappings);
           this.AllTemplateParaMappings.forEach(x => {
             this.InsertTemplateParameters(x);
           });
@@ -317,6 +328,25 @@ export class DashboardComponent implements OnInit {
       },
       (err) => {
         console.error(err);
+      }
+    );
+  }
+
+  GetTemplateDocumentByTemplate(TemplateValue: string): void {
+    this.IsProgressBarVisibile = true;
+    this._templateService.GetTemplateDocumentByTemplate(TemplateValue).subscribe(
+      data => {
+        if (data) {
+          const file = new Blob([data], { type: 'application/pdf' });
+          this.fileToUpload = file as File;
+          const fileURL = URL.createObjectURL(file);
+          this.FileData = this.sanitizer.bypassSecurityTrustResourceUrl(fileURL);
+        }
+        this.IsProgressBarVisibile = false;
+      },
+      error => {
+        console.error(error);
+        this.IsProgressBarVisibile = false;
       }
     );
   }
@@ -460,9 +490,9 @@ export class DashboardComponent implements OnInit {
             this.SelectedHead.DOCID = data as number;
             this.AssignApprovers();
           } else {
+            this.IsProgressBarVisibile = false;
             this.notificationSnackBarComponent.openSnackBar('Something went wrong', SnackBarStatus.danger);
           }
-          this.IsProgressBarVisibile = false;
         },
         (err) => {
           console.error(err);
@@ -471,8 +501,41 @@ export class DashboardComponent implements OnInit {
         }
       );
     } else {
-
+      this.GetHeaderValuesForTemplate();
+      this.IsProgressBarVisibile = true;
+      this._homeService.CreateHeader(this.SelectedHead, this.fileToUpload).subscribe(
+        (data) => {
+          if (data) {
+            this.SelectedHead.DOCID = data as number;
+            this.InsertUserTemplateValues();
+          } else {
+            this.IsProgressBarVisibile = false;
+            this.notificationSnackBarComponent.openSnackBar('Something went wrong', SnackBarStatus.danger);
+          }
+        },
+        (err) => {
+          console.error(err);
+          this.IsProgressBarVisibile = false;
+          this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+        }
+      );
     }
+  }
+
+  InsertUserTemplateValues(): void {
+    this.GetUserTemplateValues();
+    this.IsProgressBarVisibile = true;
+    this._homeService.InsertUserTemplateValues(this.UserTemplateValueList).subscribe(
+      (data) => {
+        // this.IsProgressBarVisibile = false;
+        this.AssignApprovers();
+      },
+      (err) => {
+        console.error(err);
+        this.IsProgressBarVisibile = false;
+        this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+      }
+    );
   }
 
   AssignApprovers(): void {
@@ -498,9 +561,31 @@ export class DashboardComponent implements OnInit {
     this.SelectedHead.DocName = this.HeaderFormGroup.get('DocName').value;
     this.SelectedHead.DocType = this.HeaderFormGroup.get('DocType').value;
     this.SelectedHead.FileType = this.HeaderFormGroup.get('FileType').value;
+    this.SelectedHead.UploadedType = 'Manual';
     this.SelectedHead.CreatedBy = this.CurrentUserID.toString();
   }
 
+  GetHeaderValuesForTemplate(): void {
+    this.SelectedHead = new HeaderView();
+    this.SelectedHead.DocName = '';
+    this.SelectedHead.DocType = '';
+    this.SelectedHead.UploadedType = 'With Template';
+    this.SelectedHead.FileType = 'application/pdf';
+    this.SelectedHead.CreatedBy = this.CurrentUserID.toString();
+  }
+  GetUserTemplateValues(): void {
+    this.UserTemplateValueList = [];
+    const TemplateParametersArr = this.HeaderTemplateFormGroup.get('TemplateParameters') as FormArray;
+    TemplateParametersArr.controls.forEach((x, i) => {
+      const userTemp: UserTemplateValue = new UserTemplateValue();
+      userTemp.DOCID = this.SelectedHead.DOCID;
+      userTemp.TemplateID = this.AllTemplateParaMappings[0].TemplateID;
+      userTemp.Key = this.AllTemplateParaMappings[i].Variable;
+      userTemp.Value = x.get('VariableName').value;
+      userTemp.CreatedBy = this.CurrentUserID.toString();
+      this.UserTemplateValueList.push(userTemp);
+    });
+  }
   GetHeaderApproverValues(): void {
     this.AssignedApproversList = [];
     const HeaderApproversArr = this.HeaderApproverFormGroup.get('HeaderApprovers') as FormArray;
