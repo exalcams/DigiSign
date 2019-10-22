@@ -380,6 +380,7 @@ export class DashboardComponent implements OnInit {
       if (this.HeaderApproverFormArray.length > 0) {
         this.HeaderApproverFormArray.removeAt(this.HeaderApproverFormArray.length - 1);
         this.HeaderApproverDataSource.next(this.HeaderApproverFormArray.controls);
+        this.DisableSelctedApprovers();
       } else {
         this.notificationSnackBarComponent.openSnackBar('no items to delete', SnackBarStatus.warning);
       }
@@ -406,6 +407,7 @@ export class DashboardComponent implements OnInit {
   }
 
   DisableSelctedApprovers(): void {
+    this.EnableAllApprovers();
     const HeaderApproversArry = this.HeaderApproverFormGroup.get('HeaderApprovers') as FormArray;
     HeaderApproversArry.controls.forEach((x, i) => {
       const value = x.get('Approvers').value;
