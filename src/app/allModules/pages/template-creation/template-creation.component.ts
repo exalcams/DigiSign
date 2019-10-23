@@ -76,8 +76,8 @@ export class TemplateCreationComponent implements OnInit {
     this.TemplateCreationFormGroup = this._formBuilder.group({
       TemplateType: ['', Validators.required],
       Description: ['', Validators.required],
-      Entity: ['', Validators.required],
-      Group: ['', Validators.required],
+      Entity: [''],
+      Group: [''],
       ParameterItems: this.ParameterItemFormArray
     });
 
@@ -160,8 +160,8 @@ export class TemplateCreationComponent implements OnInit {
     const row = this._formBuilder.group({
       Variable: ['', Validators.required],
       DataType: ['', Validators.required],
-      DefaultValue: ['', Validators.required],
-      Description: ['', Validators.required],
+      DefaultValue: [''],
+      Description: [''],
     });
     this.ParameterItemFormArray.push(row);
     this.ParameterItemDataSource.next(this.ParameterItemFormArray.controls);

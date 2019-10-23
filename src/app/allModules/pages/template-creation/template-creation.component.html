@@ -1,5 +1,5 @@
 <div id="chat" class="page-layout carded fullwidth inner-scroll">
-  <div class="top-bg accent"></div>
+  <!-- <div class="top-bg accent"></div> -->
   <div class="center">
     <div fxLayout="column" fxLayoutAlign="center" fxLayoutGap="10px">
       <form name="form" [formGroup]="TemplateCreationFormGroup">
@@ -116,7 +116,7 @@
                     <tr mat-row *matRowDef="let row;let i = index; columns: ParameterItemColumns;"></tr>
 
                     <ng-container matColumnDef="Variable">
-                      <th mat-header-cell *matHeaderCellDef class="boldItalicClass"> Variable </th>
+                      <th mat-header-cell *matHeaderCellDef class="boldItalicClass"> Key </th>
                       <td mat-cell *matCellDef="let row; let index = index" [formGroupName]="index">
                         <input matInput formControlName="Variable">
                         <span class="pl-4 errorClass"
@@ -167,7 +167,7 @@
                     </ng-container>
 
                     <ng-container matColumnDef="Action">
-                      <th mat-header-cell *matHeaderCellDef class="boldItalicClass">Remove</th>
+                      <th mat-header-cell *matHeaderCellDef class="boldItalicClass">Action</th>
                       <td mat-cell *matCellDef="let row;let index = index" class="rightAlignClass">
                         <!-- <mat-icon>image</mat-icon> -->
                         <img matTooltip="Remove" (click)="RemoveParameterItem(index)" class="imgClass"
