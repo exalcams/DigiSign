@@ -1,6 +1,6 @@
 <div id="chat" class="page-layout carded fullwidth inner-scroll">
   <!-- <div class="top-bg accent"></div> -->
-  <div class="center">
+  <div fusePerfectScrollbar>
     <div fxLayout="column" fxLayoutAlign="center" fxLayoutGap="10px">
       <form name="form" [formGroup]="TemplateCreationFormGroup">
         <mat-card class="m-12 p-12" style="border-radius: 10px;">
@@ -52,7 +52,7 @@
                 </mat-form-field>
               </div>
             </div>
-            <div class="borderTop mx-48"></div>
+            <div class="borderTop mx-48 mt-4"></div>
             <div fxLayout class="mt-8">
               <div fxFlex="40" fxLayout>
                 <div class="labelClass" fxFlex="30" fxLayoutAlign="end start">Entity</div>
@@ -88,17 +88,17 @@
         </mat-card>
         <mat-card class="m-12 p-0" style="border-radius: 10px;">
           <div fxLayout>
-            <div fxFlex="50" class="borderRightClass role-side-bar">
+            <div fxFlex="50" class="borderRightClass">
               <div fxLayout="column" class="pl-12 py-12">
                 <div fxFlex class="boldClass">Template overview</div>
                 <div class="borderTop ml-24 my-8"></div>
                 <div fxLayout="row" fxLayoutAlign="start" fxFlex="1 0 auto" class="mr-12">
-                  <iframe *ngIf="FileData" style="width:100%;min-height:33vh;" [src]="FileData"></iframe>
+                  <iframe *ngIf="FileData" style="width:100%;min-height:72vh;" [src]="FileData"></iframe>
                 </div>
               </div>
             </div>
-            <div fxFlex="49.9" class="role-side-bar">
-              <div class="sidenav-content" fusePerfectScrollbar fxFlex>
+            <div fxFlex="49.9">
+              <div fxFlex>
                 <mat-card class="p-0 m-20 mat-elevation-z8">
                   <div fxLayout="row" class="pt-8">
                     <div fxFlex class="boldClass pl-12">Parameter mapping</div>

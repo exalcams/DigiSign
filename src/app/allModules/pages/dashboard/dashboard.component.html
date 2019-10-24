@@ -1,8 +1,8 @@
 <div id="chat" class="page-layout carded fullwidth inner-scroll">
   <!-- <div class="top-bg accent"></div> -->
-  <div class="center">
+  <div>
     <div fxLayout="column" fxLayoutAlign="center" fxLayoutGap="10px">
-      <mat-card class="m-12 p-0" style="border-radius: 10px;height: 72vh;" fxLayout>
+      <mat-card class="m-12 p-0" style="border-radius: 10px;min-height: 82vh;" fxLayout>
         <div fxFlex="20" class="rightBorder role-side-bar">
           <div class="sidenav-header mt-12 bottomBorder">
             <div fxFlexLayout="row" fxLayoutAlign="center">
@@ -32,6 +32,8 @@
                     <div class="boldClass p-4">Doc. ID : #{{head.DOCID}}</div>
                     <div *ngIf="head.DocName" class="p-4">Doc. Name : {{head.DocName}}</div>
                     <div *ngIf="head.DocType" class="p-4">Doc. Type : {{head.DocType}}</div>
+                    <div *ngIf="head.Entity" class="p-4">Entity : {{head.Entity}}</div>
+                    <div *ngIf="head.Group" class="p-4">Group : {{head.Group}}</div>
                   </div>
                 </div>
               </div>
@@ -61,14 +63,14 @@
                         <input matInput placeholder="Document name" formControlName="DocName">
                         <mat-error
                           *ngIf="HeaderFormGroup.get('DocName').touched &&  HeaderFormGroup.get('DocName').hasError('required')">
-                          Document name is required
+                          Doc. name is required
                         </mat-error>
                       </mat-form-field>
                       <mat-form-field appearance="outline" class="pr-8" fxFlex="50">
                         <input matInput placeholder="Document type" formControlName="DocType">
                         <mat-error
                           *ngIf="HeaderFormGroup.get('DocType').touched && HeaderFormGroup.get('DocType').hasError('required')">
-                          Document type is required
+                          Doc. type is required
                         </mat-error>
                       </mat-form-field>
                     </div>
@@ -113,21 +115,22 @@
                       </mat-form-field>
                     </div>
                     <!-- <div fxLayout="row wrap"> -->
-                      <div fxLayout="row" formArrayName="TemplateParameters"
-                        *ngFor="let pars of HeaderTemplateFormGroup.get('TemplateParameters').controls; let i = index">
-                        <div [formGroupName]="i" fxFlex fxLayout>
-                          <div class="labelClass" fxFlex="30" fxLayoutAlign="end start">{{AllTemplateParaMappings[i].Variable}}</div>
-                          <mat-form-field fxFlex="70" appearance="outline" class="mx-12">
-                            <input matInput [placeholder]="AllTemplateParaMappings[i].Variable"
-                              formControlName="VariableName">
-                            <mat-error
-                              *ngIf="HeaderTemplateFormGroup.get('TemplateParameters').controls[i].get('VariableName').touched &&
+                    <div fxLayout="row" formArrayName="TemplateParameters"
+                      *ngFor="let pars of HeaderTemplateFormGroup.get('TemplateParameters').controls; let i = index">
+                      <div [formGroupName]="i" fxFlex fxLayout>
+                        <div class="labelClass" fxFlex="30" fxLayoutAlign="end start">
+                          {{AllTemplateParaMappings[i].Variable}}</div>
+                        <mat-form-field fxFlex="70" appearance="outline" class="mx-12">
+                          <input matInput [placeholder]="AllTemplateParaMappings[i].Variable"
+                            formControlName="VariableName">
+                          <mat-error
+                            *ngIf="HeaderTemplateFormGroup.get('TemplateParameters').controls[i].get('VariableName').touched &&
                               HeaderTemplateFormGroup.get('TemplateParameters').controls[i].get('VariableName').hasError('required')">
-                              {{AllTemplateParaMappings[i].Variable}} is required
-                            </mat-error>
-                          </mat-form-field>
-                        </div>
+                            {{AllTemplateParaMappings[i].Variable}} is required
+                          </mat-error>
+                        </mat-form-field>
                       </div>
+                    </div>
                     <!-- </div> -->
                   </div>
                 </div>
@@ -216,10 +219,16 @@
                       <div class="BoldUnderLine p-4 pl-12" fxFlex align="center">DOC ID : #{{SelectedHead.DOCID}}</div>
                     </div>
                     <div fxFlex fxLayout fxLayoutAlign="space-between center">
-                      <div *ngIf="SelectedHead.DocName" fxFlex class="p-4 pl-12">Doc. Name : <span class="UnderLine">{{SelectedHead.DocName}}</span>
+                      <div *ngIf="SelectedHead.DocName" fxFlex class="p-4 pl-12">Doc. Name : <span
+                          class="UnderLine">{{SelectedHead.DocName}}</span>
                       </div>
                       <div *ngIf="SelectedHead.DocType" fxFlex class="p-4 pr-12" align="end">Doc. Type : <span
                           class="UnderLine">{{SelectedHead.DocType}}</span></div>
+                      <div *ngIf="SelectedHead.Entity" fxFlex class="p-4 pl-12">Entity : <span
+                          class="UnderLine">{{SelectedHead.Entity}}</span>
+                      </div>
+                      <div *ngIf="SelectedHead.Group" fxFlex class="p-4 pr-12" align="end">Group : <span
+                          class="UnderLine">{{SelectedHead.Group}}</span></div>
                     </div>
                   </div>
                   <div fxLayout fxLayoutAlign="center" class="mx-8 mb-4"

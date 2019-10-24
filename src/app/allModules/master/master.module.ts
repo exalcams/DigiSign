@@ -19,6 +19,7 @@ import { RoleSideBarComponent } from './role/role-side-bar/role-side-bar.compone
 import { RoleMainContentComponent } from './role/role-main-content/role-main-content.component';
 import { MenuAppSideBarComponent } from './menu-app/menu-app-side-bar/menu-app-side-bar.component';
 import { MenuAppMainContentComponent } from './menu-app/menu-app-main-content/menu-app-main-content.component';
+import { GroupComponent } from './group/group.component';
 
 const menuRoutes: Routes = [
     {
@@ -33,18 +34,23 @@ const menuRoutes: Routes = [
         path: 'user',
         component: UserComponent,
     },
+    {
+        path: 'group',
+        component: GroupComponent
+    }
 ];
 @NgModule({
     declarations: [
-       UserComponent,
-       UserSideBarComponent,
-       UserMainContentComponent,
-       RoleComponent,
-       RoleSideBarComponent,
-       RoleMainContentComponent,
-       MenuAppComponent,
-       MenuAppSideBarComponent,
-       MenuAppMainContentComponent,
+        UserComponent,
+        UserSideBarComponent,
+        UserMainContentComponent,
+        RoleComponent,
+        RoleSideBarComponent,
+        RoleMainContentComponent,
+        MenuAppComponent,
+        MenuAppSideBarComponent,
+        MenuAppMainContentComponent,
+        GroupComponent,
     ],
     imports: [
         MatButtonModule,

@@ -71,5 +71,33 @@ export class UserNotification {
     ModifiedOn?: Date;
 }
 
+export class Group {
+    GroupID: number;
+    GroupName: string;
+    IsActive: boolean;
+    CreatedOn: Date;
+    CreatedBy: string;
+    ModifiedOn?: Date;
+    ModifiedBy: string;
+}
+
+export class Entity {
+    ID: number;
+    EntityName: string;
+    IsActive: boolean;
+    CreatedOn: Date;
+    CreatedBy: string;
+    ModifiedOn?: Date;
+    ModifiedBy: string;
+}
+export class DataType {
+    ID: number;
+    DataTypeName: string;
+    IsActive: boolean;
+    CreatedOn: Date;
+    CreatedBy: string;
+    ModifiedOn?: Date;
+    ModifiedBy: string;
+}
 
 

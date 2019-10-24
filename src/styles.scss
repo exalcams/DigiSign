@@ -62,6 +62,14 @@
 .normal .mat-form-field-flex > .mat-form-field-infix {
   padding: 0.4375em 0 !important;
 }
+.normal {
+  .mat-input-element {
+    padding-bottom: 8px !important;
+  }
+  .mat-select-value {
+    padding-bottom: 13px !important;
+  }
+}
 .mat-form-field-label-wrapper {
   top: -1em;
 }

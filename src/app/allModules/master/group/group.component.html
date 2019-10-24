@@ -1,0 +1,47 @@
+<div id="chat" class="page-layout carded fullwidth inner-scroll">
+  <div class="top-bg accent"></div>
+  <div class="center">
+    <div class="m-12 p-0 content-card" style="border-radius: 10px" fxLayout>
+      <div fxFlex="40" class="rightBorder group-side-bar">
+        <div class="sidenav-header">
+          <mat-toolbar>
+            <mat-toolbar-row fxLayout="row" fxLayoutAlign="space-between center">
+              <div class="search-wrapper" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                <div class="search" fxFlex fxLayout="row" fxLayoutAlign="start center">
+                  <mat-icon class="s-16">search</mat-icon>
+                  <input [(ngModel)]="searchText" type="text" placeholder="Search" fxFlex>
+                </div>
+              </div>
+              <div fxFlex fxLayout="row" fxLayoutAlign="end center">
+                <button mat-mini-fab class="mr-8" matTooltip="Add Menu" (click)="AddGroup()">
+                  <mat-icon aria-label="Add Group">add</mat-icon>
+                </button>
+              </div>
+            </mat-toolbar-row>
+          </mat-toolbar>
+        </div>
+        <div class="sidenav-content py-16" fusePerfectScrollbar fxFlex>
+          <div *ngFor="let ap of AllGroups | filter: searchText">
+            <div [attr.aria-label]="ap.GroupName">
+              <div fxLayout="row" fxLayoutAlign="start center" class="side-bar-items" matRipple
+                (click)="loadSelectedGroup(ap)" [ngClass]="{'active accent':selectID==ap.GroupID}">
+                <div fxFlex="70%" fxLayoutAlign="start center">
+                  {{ap.GroupName}}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="(AllGroups | filter: searchText).length === 0" class="no-results-message">
+            <span class="pl-12"> No results..</span>
+          </div>
+        </div>
+      </div>
+      <div fxFlex="60">
+
+      </div>
+    </div>
+  </div>
+  <mat-progress-spinner *ngIf="IsProgressBarVisibile" class="ProgressBarPostion1" color="accent" mode="indeterminate">
+  </mat-progress-spinner>
+  <div id="overlay" *ngIf="IsProgressBarVisibile"></div>
+</div>

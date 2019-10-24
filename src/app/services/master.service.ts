@@ -4,7 +4,7 @@ import { Observable, throwError, Subject } from 'rxjs';
 import { _MatChipListMixinBase } from '@angular/material';
 import { AuthService } from './auth.service';
 import { catchError } from 'rxjs/operators';
-import { MenuApp, RoleWithApp, UserWithRole, UserNotification } from 'app/models/master';
+import { MenuApp, RoleWithApp, UserWithRole, UserNotification, Group, DataType, Entity } from 'app/models/master';
 
 @Injectable({
   providedIn: 'root'
@@ -14,13 +14,13 @@ export class MasterService {
   baseAddress: string;
   NotificationEvent: Subject<any>;
 
-    GetNotification(): Observable<any> {
-        return this.NotificationEvent.asObservable();
-    }
+  GetNotification(): Observable<any> {
+    return this.NotificationEvent.asObservable();
+  }
 
-    TriggerNotification(eventName: string): void {
-        this.NotificationEvent.next(eventName);
-    }
+  TriggerNotification(eventName: string): void {
+    this.NotificationEvent.next(eventName);
+  }
 
   constructor(private _httpClient: HttpClient, private _authService: AuthService) {
     this.baseAddress = _authService.baseAddress;
@@ -201,6 +201,124 @@ export class MasterService {
   UpdateNotification(SelectedNotification: UserNotification): Observable<any> {
     return this._httpClient.post<any>(`${this.baseAddress}api/Notification/UpdateNotification`,
       SelectedNotification, {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json'
+      })
+    })
+      .pipe(catchError(this.errorHandler));
+  }
+
+
+  // Group
+  CreateGroup(group: Group): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}api/Master/CreateGroup`,
+      group,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      })
+      .pipe(catchError(this.errorHandler));
+  }
+
+  GetAllGroups(): Observable<Group[] | string> {
+    return this._httpClient.get<Group[]>(`${this.baseAddress}api/Master/GetAllGroups`)
+      .pipe(catchError(this.errorHandler));
+  }
+
+  UpdateGroup(group: Group): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}api/Master/UpdateGroup`,
+      group,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      })
+      .pipe(catchError(this.errorHandler));
+  }
+
+  DeleteGroup(group: Group): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}api/Master/DeleteGroup`,
+      group,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      })
+      .pipe(catchError(this.errorHandler));
+  }
+
+  // DataType
+  CreateDataType(dataType: DataType): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}api/Master/CreateDataType`,
+      DataType,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      })
+      .pipe(catchError(this.errorHandler));
+  }
+
+  GetAllDataTypes(): Observable<DataType[] | string> {
+    return this._httpClient.get<DataType[]>(`${this.baseAddress}api/Master/GetAllDataTypes`)
+      .pipe(catchError(this.errorHandler));
+  }
+
+  UpdateDataType(dataType: DataType): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}api/Master/UpdateDataType`,
+      DataType,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      })
+      .pipe(catchError(this.errorHandler));
+  }
+
+  DeleteDataType(dataType: DataType): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}api/Master/DeleteDataType`,
+      DataType,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      })
+      .pipe(catchError(this.errorHandler));
+  }
+
+  // Entity
+  CreateEntity(entity: Entity): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}api/Master/CreateEntity`,
+      Entity,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      })
+      .pipe(catchError(this.errorHandler));
+  }
+
+  GetAllEntity(): Observable<Entity[] | string> {
+    return this._httpClient.get<Entity[]>(`${this.baseAddress}api/Master/GetAllEntity`)
+      .pipe(catchError(this.errorHandler));
+  }
+
+  UpdateEntity(entity: Entity): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}api/Master/UpdateEntity`,
+      Entity,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      })
+      .pipe(catchError(this.errorHandler));
+  }
+
+  DeleteEntity(entity: Entity): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}api/Master/DeleteEntity`,
+      Entity,
+      {
         headers: new HttpHeaders({
           'Content-Type': 'application/json'
         })

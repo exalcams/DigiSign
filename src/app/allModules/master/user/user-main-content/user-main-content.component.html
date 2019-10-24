@@ -41,7 +41,7 @@
     </mat-form-field>
 
     <mat-form-field class="pl-8" fxFlex="50">
-      <mat-select placeholder="Role Name" formControlName="roleID">
+      <mat-select matInput placeholder="Role Name" formControlName="roleID">
         <mat-option *ngFor="let rol of AllRoles" [value]="rol.RoleID">{{rol.RoleName}}</mat-option>
       </mat-select>
       <mat-error

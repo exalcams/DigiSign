@@ -228,14 +228,14 @@
       background-color: #dcdcdc;
     }
   }
-  .UnderLine{
+  .UnderLine {
     text-decoration: underline;
   }
   .BoldUnderLine {
     @extend .boldClass;
     @extend .UnderLine;
   }
-  
+
   .mat-form-field-infix {
     width: auto !important;
   }
@@ -245,7 +245,10 @@
   .approvedClass {
     background-color: #2ecc71;
   }
-  table tbody td{
+  table tbody td {
     text-align: left !important;
+  }
+  .mat-error {
+    margin-top: 6px !important;
   }
 }

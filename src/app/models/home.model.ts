@@ -18,6 +18,8 @@ export class HeaderView {
     FileType: string;
     UploadedType: string;
     CurrentApprover: string;
+    Entity: string;
+    Group: string;
     CreatedBy: string;
     CreatedOn: Date;
     LastUpdatedBy: string;

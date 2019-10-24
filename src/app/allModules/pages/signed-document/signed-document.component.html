@@ -1,8 +1,8 @@
 <div id="chat" class="page-layout carded fullwidth inner-scroll">
   <!-- <div class="top-bg accent"></div> -->
-  <div class="center">
+  <div fusePerfectScrollbar>
     <div fxLayout="column" fxLayoutAlign="center" fxLayoutGap="10px">
-      <mat-card class="m-12 p-0" style="height: 72vh;border-radius: 10px" fxLayout="column">
+      <mat-card class="m-12 p-0" style="min-height: 82vh;border-radius: 10px" fxLayout="column">
         <div class="h2 pl-24 my-12 successColor">SIGNED DOCUMENTS</div>
         <div class="mat-elevation-z8 my-12 mx-12 normal" fxFlex>
           <table mat-table [dataSource]="SignDocumentsDataSource" matSort style="width:100%">
