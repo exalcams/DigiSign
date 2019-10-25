@@ -4,7 +4,8 @@ import { Observable, throwError, Subject } from 'rxjs';
 import { _MatChipListMixinBase } from '@angular/material';
 import { AuthService } from './auth.service';
 import { catchError } from 'rxjs/operators';
-import { Templates, Group, CreatedTemplate, TemplateParaMapping } from 'app/models/template.model';
+import { CreatedTemplate, TemplateParaMapping } from 'app/models/template.model';
+import { Templates, Group } from 'app/models/master';
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +28,10 @@ export class TemplateService {
 
   GetAllTemplates(): Observable<Templates[] | string> {
     return this._httpClient.get<Templates[]>(`${this.baseAddress}api/Template/GetAllTemplates`)
+      .pipe(catchError(this.errorHandler));
+  }
+  GetAllCreatedTemplates(): Observable<Templates[] | string> {
+    return this._httpClient.get<Templates[]>(`${this.baseAddress}api/Home/GetAllCreatedTemplates`)
       .pipe(catchError(this.errorHandler));
   }
   GetAllGroups(): Observable<Group[] | string> {

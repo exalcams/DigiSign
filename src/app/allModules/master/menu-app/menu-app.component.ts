@@ -18,9 +18,9 @@ export class MenuAppComponent implements OnInit {
   MenuItems: string[];
   AllMenuApps: MenuApp[] = [];
   SelectedMenuApp: MenuApp;
-    authenticationDetails: AuthenticationDetails;
-    notificationSnackBarComponent: NotificationSnackBarComponent;
-    IsProgressBarVisibile: boolean;
+  authenticationDetails: AuthenticationDetails;
+  notificationSnackBarComponent: NotificationSnackBarComponent;
+  IsProgressBarVisibile: boolean;
   constructor(private _masterService: MasterService, private _router: Router, public snackBar: MatSnackBar) {
     this.authenticationDetails = new AuthenticationDetails();
     this.notificationSnackBarComponent = new NotificationSnackBarComponent(this.snackBar);
@@ -53,7 +53,8 @@ export class MenuAppComponent implements OnInit {
       (err) => {
         console.log(err);
         this.IsProgressBarVisibile = false;
-        this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);      }
+        this.notificationSnackBarComponent.openSnackBar(err instanceof Object ? 'Something went wrong' : err, SnackBarStatus.danger);
+      }
     );
   }
   OnMenuAppSelectionChanged(selectedMenuApp: MenuApp): void {

@@ -4,7 +4,7 @@ import { MatIconRegistry, MatSnackBar, MatDialog, MatDialogConfig } from '@angul
 import { Router } from '@angular/router';
 import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
 import { SnackBarStatus } from 'app/notifications/notification-snack-bar/notification-snackbar-status-enum';
-import { AuthenticationDetails } from 'app/models/master';
+import { AuthenticationDetails, Templates } from 'app/models/master';
 import { fuseAnimations } from '@fuse/animations';
 import { Guid } from 'guid-typescript';
 import { HomeService } from 'app/services/home.service';
@@ -12,7 +12,7 @@ import { HeaderAndApproverList, AssignedApprover, Header, HeaderView, Approver, 
 import { FormArray, AbstractControl, FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
-import { Templates, TemplateParaMapping } from 'app/models/template.model';
+import { TemplateParaMapping } from 'app/models/template.model';
 import { TemplateService } from 'app/services/template.service';
 
 @Component({
@@ -169,7 +169,7 @@ export class DashboardComponent implements OnInit {
     this.HeaderApproverDataSource.next(this.HeaderApproverFormArray.controls);
   }
   GetAllTemplates(): void {
-    this._templateService.GetAllTemplates().subscribe(
+    this._templateService.GetAllCreatedTemplates().subscribe(
       (data) => {
         if (data) {
           this.AllTemplates = data as Templates[];

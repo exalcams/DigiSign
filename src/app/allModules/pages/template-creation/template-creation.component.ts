@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { fuseAnimations } from '@fuse/animations';
-import { AuthenticationDetails } from 'app/models/master';
+import { AuthenticationDetails, Templates, Group, DataType } from 'app/models/master';
 import { Guid } from 'guid-typescript';
 import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
 import { FormGroup, FormBuilder, Validators, FormArray, AbstractControl } from '@angular/forms';
@@ -9,10 +9,11 @@ import { MatIconRegistry, MatSnackBar, MatDialog, MatDialogConfig } from '@angul
 import { DomSanitizer } from '@angular/platform-browser';
 import { HomeService } from 'app/services/home.service';
 import { SnackBarStatus } from 'app/notifications/notification-snack-bar/notification-snackbar-status-enum';
-import { Templates, Group, CreatedTemplate, TemplateParaMapping } from 'app/models/template.model';
+import { CreatedTemplate, TemplateParaMapping } from 'app/models/template.model';
 import { TemplateService } from 'app/services/template.service';
 import { BehaviorSubject } from 'rxjs';
 import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
+import { MasterService } from 'app/services/master.service';
 
 @Component({
   selector: 'app-template-creation',
@@ -38,7 +39,7 @@ export class TemplateCreationComponent implements OnInit {
   fileToUpload: File;
   FileData: any;
   // TemplateCreationFormGroup: FormGroup;
-  DataTypeList: string[] = [];
+  AllDataTypes: DataType[] = [];
   ParameterItemColumns: string[] = ['Variable', 'DataType', 'DefaultValue', 'Description', 'Action'];
   ParameterItemFormArray: FormArray = this._formBuilder.array([]);
   ParameterItemDataSource = new BehaviorSubject<AbstractControl[]>([]);
@@ -50,6 +51,7 @@ export class TemplateCreationComponent implements OnInit {
     public snackBar: MatSnackBar,
     private _formBuilder: FormBuilder,
     private _templateService: TemplateService,
+    private _masterService: MasterService,
     private dialog: MatDialog,
   ) {
     this.notificationSnackBarComponent = new NotificationSnackBarComponent(this.snackBar);
@@ -72,7 +74,7 @@ export class TemplateCreationComponent implements OnInit {
     } else {
       this._router.navigate(['/auth/login']);
     }
-    this.DataTypeList = ['int', 'double', 'string'];
+    // this.DataTypeList = ['int', 'double', 'string'];
     this.TemplateCreationFormGroup = this._formBuilder.group({
       TemplateType: ['', Validators.required],
       Description: ['', Validators.required],
@@ -84,9 +86,9 @@ export class TemplateCreationComponent implements OnInit {
     // this.TemplateCreationFormGroup = this._formBuilder.group({
     //   ParameterItems: this.ParameterItemFormArray
     // });
-
     this.GetAllTemplates();
     this.GetAllGroups();
+    this.GetAllDataTypes();
   }
 
   ResetForm(): void {
@@ -129,10 +131,23 @@ export class TemplateCreationComponent implements OnInit {
   }
 
   GetAllGroups(): void {
-    this._templateService.GetAllGroups().subscribe(
+    this._masterService.GetAllGroups().subscribe(
       (data) => {
         if (data) {
           this.AllGroups = data as Group[];
+        }
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
+  }
+
+  GetAllDataTypes(): void {
+    this._masterService.GetAllDataTypes().subscribe(
+      (data) => {
+        if (data) {
+          this.AllDataTypes = data as DataType[];
         }
       },
       (err) => {
@@ -163,8 +178,9 @@ export class TemplateCreationComponent implements OnInit {
       DefaultValue: [''],
       Description: [''],
     });
-    this.ParameterItemFormArray.push(row);
+    // this.ParameterItemFormArray.push(row);
     // this.ParameterItemFormArray.controls.unshift(row);
+    this.ParameterItemFormArray.insert(0, row);
     this.ParameterItemDataSource.next(this.ParameterItemFormArray.controls);
   }
 
@@ -174,6 +190,21 @@ export class TemplateCreationComponent implements OnInit {
       const file = new Blob([this.fileToUpload], { type: this.fileToUpload.type });
       const fileURL = URL.createObjectURL(file);
       this.FileData = this.sanitizer.bypassSecurityTrustResourceUrl(fileURL);
+    }
+  }
+
+  DataTypeChange(event, index: number): void {
+    const ParameterItemsArry = this.TemplateCreationFormGroup.get('ParameterItems') as FormArray;
+    if (ParameterItemsArry.length > 0) {
+      ParameterItemsArry.controls[index].get('DefaultValue').patchValue('');
+      if (event && event.value) {
+        if (event.value.toString().toLowerCase().includes('date')) {
+          // console.log(event.value);
+          ParameterItemsArry.controls[index].get('DefaultValue').disable();
+        } else {
+          ParameterItemsArry.controls[index].get('DefaultValue').enable();
+        }
+      }
     }
   }
 

@@ -121,8 +121,15 @@
                         <div class="labelClass" fxFlex="30" fxLayoutAlign="end start">
                           {{AllTemplateParaMappings[i].Variable}}</div>
                         <mat-form-field fxFlex="70" appearance="outline" class="mx-12">
-                          <input matInput [placeholder]="AllTemplateParaMappings[i].Variable"
+                          <input *ngIf="!AllTemplateParaMappings[i].Variable?.toLowerCase().includes('date')"
+                          matInput [placeholder]="AllTemplateParaMappings[i].Variable"
                             formControlName="VariableName">
+                          <input *ngIf="AllTemplateParaMappings[i].Variable?.toLowerCase().includes('date')" matInput
+                            [matDatepicker]="picker" formControlName="VariableName">
+                          <mat-datepicker-toggle matSuffix [for]="picker"
+                            *ngIf="AllTemplateParaMappings[i].Variable?.toLowerCase().includes('date')">
+                          </mat-datepicker-toggle>
+                          <mat-datepicker #picker></mat-datepicker>
                           <mat-error
                             *ngIf="HeaderTemplateFormGroup.get('TemplateParameters').controls[i].get('VariableName').touched &&
                               HeaderTemplateFormGroup.get('TemplateParameters').controls[i].get('VariableName').hasError('required')">

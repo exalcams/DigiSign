@@ -4,7 +4,7 @@ import { Observable, throwError, Subject } from 'rxjs';
 import { _MatChipListMixinBase } from '@angular/material';
 import { AuthService } from './auth.service';
 import { catchError } from 'rxjs/operators';
-import { MenuApp, RoleWithApp, UserWithRole, UserNotification, Group, DataType, Entity } from 'app/models/master';
+import { MenuApp, RoleWithApp, UserWithRole, UserNotification, Group, DataType, Entity, Templates } from 'app/models/master';
 
 @Injectable({
   providedIn: 'root'
@@ -251,7 +251,7 @@ export class MasterService {
   // DataType
   CreateDataType(dataType: DataType): Observable<any> {
     return this._httpClient.post<any>(`${this.baseAddress}api/Master/CreateDataType`,
-      DataType,
+      dataType,
       {
         headers: new HttpHeaders({
           'Content-Type': 'application/json'
@@ -267,7 +267,7 @@ export class MasterService {
 
   UpdateDataType(dataType: DataType): Observable<any> {
     return this._httpClient.post<any>(`${this.baseAddress}api/Master/UpdateDataType`,
-      DataType,
+      dataType,
       {
         headers: new HttpHeaders({
           'Content-Type': 'application/json'
@@ -278,7 +278,7 @@ export class MasterService {
 
   DeleteDataType(dataType: DataType): Observable<any> {
     return this._httpClient.post<any>(`${this.baseAddress}api/Master/DeleteDataType`,
-      DataType,
+      dataType,
       {
         headers: new HttpHeaders({
           'Content-Type': 'application/json'
@@ -290,7 +290,7 @@ export class MasterService {
   // Entity
   CreateEntity(entity: Entity): Observable<any> {
     return this._httpClient.post<any>(`${this.baseAddress}api/Master/CreateEntity`,
-      Entity,
+      entity,
       {
         headers: new HttpHeaders({
           'Content-Type': 'application/json'
@@ -306,7 +306,7 @@ export class MasterService {
 
   UpdateEntity(entity: Entity): Observable<any> {
     return this._httpClient.post<any>(`${this.baseAddress}api/Master/UpdateEntity`,
-      Entity,
+      entity,
       {
         headers: new HttpHeaders({
           'Content-Type': 'application/json'
@@ -317,7 +317,46 @@ export class MasterService {
 
   DeleteEntity(entity: Entity): Observable<any> {
     return this._httpClient.post<any>(`${this.baseAddress}api/Master/DeleteEntity`,
-      Entity,
+      entity,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      })
+      .pipe(catchError(this.errorHandler));
+  }
+
+  // Template
+  CreateTemplate(template: Templates): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}api/Master/CreateTemplate`,
+      template,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      })
+      .pipe(catchError(this.errorHandler));
+  }
+
+  GetAllTemplates(): Observable<Templates[] | string> {
+    return this._httpClient.get<Templates[]>(`${this.baseAddress}api/Master/GetAllTemplates`)
+      .pipe(catchError(this.errorHandler));
+  }
+
+  UpdateTemplate(template: Templates): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}api/Master/UpdateTemplate`,
+      template,
+      {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json'
+        })
+      })
+      .pipe(catchError(this.errorHandler));
+  }
+
+  DeleteTemplate(template: Templates): Observable<any> {
+    return this._httpClient.post<any>(`${this.baseAddress}api/Master/DeleteTemplate`,
+      template,
       {
         headers: new HttpHeaders({
           'Content-Type': 'application/json'

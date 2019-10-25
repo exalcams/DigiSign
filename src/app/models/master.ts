@@ -100,4 +100,15 @@ export class DataType {
     ModifiedBy: string;
 }
 
+export class Templates {
+    ID: number;
+    TemplateType: string;
+    IsActive: boolean;
+    CreatedBy: string;
+    CreatedOn: Date;
+    LastUpdatedBy: string;
+    LastUpdatedOn?: Date;
+}
+
+
 

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MasterService } from 'app/services/master.service';
-import { Group, AuthenticationDetails, MenuApp } from 'app/models/master';
+import { DataType, AuthenticationDetails, MenuApp } from 'app/models/master';
 import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
 import { Router } from '@angular/router';
 import { MatSnackBar, MatDialog, MatDialogConfig } from '@angular/material';
@@ -9,20 +9,20 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
 
 @Component({
-  selector: 'app-group',
-  templateUrl: './group.component.html',
-  styleUrls: ['./group.component.scss']
+  selector: 'app-data-type',
+  templateUrl: './data-type.component.html',
+  styleUrls: ['./data-type.component.scss']
 })
-export class GroupComponent implements OnInit {
+export class DataTypeComponent implements OnInit {
   MenuItems: string[];
   authenticationDetails: AuthenticationDetails;
   notificationSnackBarComponent: NotificationSnackBarComponent;
   IsProgressBarVisibile: boolean;
-  AllGroups: Group[] = [];
-  SelectedGroup: Group;
+  AllDataTypes: DataType[] = [];
+  SelectedDataType: DataType;
   searchText = '';
-  selectGroupID = 0;
-  groupFormGroup: FormGroup;
+  selectDataTypeID = 0;
+  DataTypeFormGroup: FormGroup;
 
   constructor(
     private _masterService: MasterService,
@@ -34,9 +34,9 @@ export class GroupComponent implements OnInit {
     this.authenticationDetails = new AuthenticationDetails();
     this.notificationSnackBarComponent = new NotificationSnackBarComponent(this.snackBar);
     this.IsProgressBarVisibile = false;
-    this.SelectedGroup = new Group();
-    this.groupFormGroup = this._formBuilder.group({
-      GroupName: ['', Validators.required]
+    this.SelectedDataType = new DataType();
+    this.DataTypeFormGroup = this._formBuilder.group({
+      DataTypeName: ['', Validators.required]
     });
   }
 
@@ -46,38 +46,38 @@ export class GroupComponent implements OnInit {
     if (retrievedObject) {
       this.authenticationDetails = JSON.parse(retrievedObject) as AuthenticationDetails;
       this.MenuItems = this.authenticationDetails.menuItemNames.split(',');
-      if (this.MenuItems.indexOf('Group') < 0) {
+      if (this.MenuItems.indexOf('DataType') < 0) {
         this.notificationSnackBarComponent.openSnackBar('You do not have permission to visit this page', SnackBarStatus.danger);
         this._router.navigate(['/auth/login']);
       }
-      this.GetAllGroups();
+      this.GetAllDataTypes();
     } else {
       this._router.navigate(['/auth/login']);
     }
   }
 
   ResetControl(): void {
-    this.SelectedGroup = new Group();
-    this.selectGroupID = 0;
-    this.groupFormGroup.reset();
-    Object.keys(this.groupFormGroup.controls).forEach(key => {
-      this.groupFormGroup.get(key).markAsUntouched();
+    this.SelectedDataType = new DataType();
+    this.selectDataTypeID = 0;
+    this.DataTypeFormGroup.reset();
+    Object.keys(this.DataTypeFormGroup.controls).forEach(key => {
+      this.DataTypeFormGroup.get(key).markAsUntouched();
     });
 
   }
 
-  AddGroup(): void {
+  AddDataType(): void {
     this.ResetControl();
   }
 
-  GetAllGroups(): void {
+  GetAllDataTypes(): void {
     this.IsProgressBarVisibile = true;
-    this._masterService.GetAllGroups().subscribe(
+    this._masterService.GetAllDataTypes().subscribe(
       (data) => {
         if (data) {
-          this.AllGroups = data as Group[];
-          if (this.AllGroups.length && this.AllGroups.length > 0) {
-            this.loadSelectedGroup(this.AllGroups[0]);
+          this.AllDataTypes = data as DataType[];
+          if (this.AllDataTypes.length && this.AllDataTypes.length > 0) {
+            this.loadSelectedDataType(this.AllDataTypes[0]);
           }
           this.IsProgressBarVisibile = false;
         }
@@ -89,15 +89,15 @@ export class GroupComponent implements OnInit {
     );
   }
 
-  loadSelectedGroup(group: Group): void {
-    this.SelectedGroup = group;
-    this.selectGroupID = group.GroupID;
-    this.groupFormGroup.get('GroupName').patchValue(group.GroupName);
+  loadSelectedDataType(dataType: DataType): void {
+    this.SelectedDataType = dataType;
+    this.selectDataTypeID = dataType.ID;
+    this.DataTypeFormGroup.get('DataTypeName').patchValue(dataType.DataTypeName);
   }
 
   SaveClicked(): void {
-    if (this.groupFormGroup.valid) {
-      if (this.SelectedGroup.GroupID) {
+    if (this.DataTypeFormGroup.valid) {
+      if (this.SelectedDataType.ID) {
         const Actiontype = 'Update';
         this.OpenConfirmationDialog(Actiontype);
       } else {
@@ -110,8 +110,8 @@ export class GroupComponent implements OnInit {
   }
 
   DeleteClicked(): void {
-    if (this.groupFormGroup.valid) {
-      if (this.SelectedGroup.GroupID) {
+    if (this.DataTypeFormGroup.valid) {
+      if (this.SelectedDataType.ID) {
         const Actiontype = 'Delete';
         this.OpenConfirmationDialog(Actiontype);
       }
@@ -121,9 +121,9 @@ export class GroupComponent implements OnInit {
   }
 
   ShowValidationErrors(): void {
-    Object.keys(this.groupFormGroup.controls).forEach(key => {
-      this.groupFormGroup.get(key).markAsTouched();
-      this.groupFormGroup.get(key).markAsDirty();
+    Object.keys(this.DataTypeFormGroup.controls).forEach(key => {
+      this.DataTypeFormGroup.get(key).markAsTouched();
+      this.DataTypeFormGroup.get(key).markAsDirty();
     });
   }
 
@@ -131,7 +131,7 @@ export class GroupComponent implements OnInit {
     const dialogConfig: MatDialogConfig = {
       data: {
         Actiontype: Actiontype,
-        Catagory: 'Group'
+        Catagory: 'DataType'
       },
       panelClass: 'confirmation-dialog'
     };
@@ -140,25 +140,25 @@ export class GroupComponent implements OnInit {
       result => {
         if (result) {
           if (Actiontype === 'Create') {
-            this.CreateGroup();
+            this.CreateDataType();
           } else if (Actiontype === 'Update') {
-            this.UpdateGroup();
+            this.UpdateDataType();
           } else if (Actiontype === 'Delete') {
-            this.DeleteGroup();
+            this.DeleteDataType();
           }
         }
       });
   }
 
-  CreateGroup(): void {
-    this.SelectedGroup.GroupName = this.groupFormGroup.get('GroupName').value;
-    this.SelectedGroup.CreatedBy = this.authenticationDetails.userID.toString();
+  CreateDataType(): void {
+    this.SelectedDataType.DataTypeName = this.DataTypeFormGroup.get('DataTypeName').value;
+    this.SelectedDataType.CreatedBy = this.authenticationDetails.userID.toString();
     this.IsProgressBarVisibile = true;
-    this._masterService.CreateGroup(this.SelectedGroup).subscribe(
+    this._masterService.CreateDataType(this.SelectedDataType).subscribe(
       (data) => {
         this.IsProgressBarVisibile = false;
-        this.notificationSnackBarComponent.openSnackBar('Group created successfully', SnackBarStatus.success);
-        this.GetAllGroups();
+        this.notificationSnackBarComponent.openSnackBar('DataType created successfully', SnackBarStatus.success);
+        this.GetAllDataTypes();
       },
       (err) => {
         console.error(err);
@@ -168,15 +168,15 @@ export class GroupComponent implements OnInit {
     );
   }
 
-  UpdateGroup(): void {
-    this.SelectedGroup.GroupName = this.groupFormGroup.get('GroupName').value;
-    this.SelectedGroup.ModifiedBy = this.authenticationDetails.userID.toString();
+  UpdateDataType(): void {
+    this.SelectedDataType.DataTypeName = this.DataTypeFormGroup.get('DataTypeName').value;
+    this.SelectedDataType.ModifiedBy = this.authenticationDetails.userID.toString();
     this.IsProgressBarVisibile = true;
-    this._masterService.UpdateGroup(this.SelectedGroup).subscribe(
+    this._masterService.UpdateDataType(this.SelectedDataType).subscribe(
       (data) => {
         this.IsProgressBarVisibile = false;
-        this.notificationSnackBarComponent.openSnackBar('Group updated successfully', SnackBarStatus.success);
-        this.GetAllGroups();
+        this.notificationSnackBarComponent.openSnackBar('Data type updated successfully', SnackBarStatus.success);
+        this.GetAllDataTypes();
       },
       (err) => {
         console.error(err);
@@ -186,15 +186,15 @@ export class GroupComponent implements OnInit {
     );
   }
 
-  DeleteGroup(): void {
-    this.SelectedGroup.GroupName = this.groupFormGroup.get('GroupName').value;
-    this.SelectedGroup.ModifiedBy = this.authenticationDetails.userID.toString();
+  DeleteDataType(): void {
+    this.SelectedDataType.DataTypeName = this.DataTypeFormGroup.get('DataTypeName').value;
+    this.SelectedDataType.ModifiedBy = this.authenticationDetails.userID.toString();
     this.IsProgressBarVisibile = true;
-    this._masterService.DeleteGroup(this.SelectedGroup).subscribe(
+    this._masterService.DeleteDataType(this.SelectedDataType).subscribe(
       (data) => {
         this.IsProgressBarVisibile = false;
-        this.notificationSnackBarComponent.openSnackBar('Group deleted successfully', SnackBarStatus.success);
-        this.GetAllGroups();
+        this.notificationSnackBarComponent.openSnackBar('DataType deleted successfully', SnackBarStatus.success);
+        this.GetAllDataTypes();
       },
       (err) => {
         console.error(err);

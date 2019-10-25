@@ -20,6 +20,9 @@ import { RoleMainContentComponent } from './role/role-main-content/role-main-con
 import { MenuAppSideBarComponent } from './menu-app/menu-app-side-bar/menu-app-side-bar.component';
 import { MenuAppMainContentComponent } from './menu-app/menu-app-main-content/menu-app-main-content.component';
 import { GroupComponent } from './group/group.component';
+import { DataTypeComponent } from './data-type/data-type.component';
+import { EntityComponent } from './entity/entity.component';
+import { TemplateComponent } from './templatess/templatess.component';
 
 const menuRoutes: Routes = [
     {
@@ -37,6 +40,18 @@ const menuRoutes: Routes = [
     {
         path: 'group',
         component: GroupComponent
+    },
+    {
+        path: 'datatype',
+        component: DataTypeComponent
+    },
+    {
+        path: 'entity',
+        component: EntityComponent
+    },
+    {
+        path: 'template',
+        component: TemplateComponent
     }
 ];
 @NgModule({
@@ -51,6 +66,9 @@ const menuRoutes: Routes = [
         MenuAppSideBarComponent,
         MenuAppMainContentComponent,
         GroupComponent,
+        DataTypeComponent,
+        EntityComponent,
+        TemplateComponent
     ],
     imports: [
         MatButtonModule,

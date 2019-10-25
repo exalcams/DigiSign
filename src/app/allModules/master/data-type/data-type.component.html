@@ -2,7 +2,7 @@
   <div class="top-bg accent"></div>
   <div class="center normal">
     <div class="m-12 p-0 content-card" style="border-radius: 10px" fxLayout>
-      <div fxFlex="40" class="rightBorder group-side-bar">
+      <div fxFlex="40" class="rightBorder datatype-side-bar">
         <div class="sidenav-header">
           <mat-toolbar>
             <mat-toolbar-row fxLayout="row" fxLayoutAlign="space-between center">
@@ -13,53 +13,53 @@
                 </div>
               </div>
               <div fxFlex fxLayout="row" fxLayoutAlign="end center">
-                <button mat-mini-fab class="mr-8" matTooltip="Add Menu" (click)="AddGroup()">
-                  <mat-icon aria-label="Add Group">add</mat-icon>
+                <button mat-mini-fab class="mr-8" matTooltip="Add Menu" (click)="AddDataType()">
+                  <mat-icon aria-label="Add DataType">add</mat-icon>
                 </button>
               </div>
             </mat-toolbar-row>
           </mat-toolbar>
         </div>
         <div class="sidenav-content py-16" fusePerfectScrollbar fxFlex>
-          <div *ngFor="let ap of AllGroups | filter: searchText">
-            <div [attr.aria-label]="ap.GroupName">
+          <div *ngFor="let ap of AllDataTypes | filter: searchText">
+            <div [attr.aria-label]="ap.DataTypeName">
               <div fxLayout="row" fxLayoutAlign="start center" class="side-bar-items" matRipple
-                (click)="loadSelectedGroup(ap)" [ngClass]="{'active accent':selectGroupID==ap.GroupID}">
+                (click)="loadSelectedDataType(ap)" [ngClass]="{'active accent':selectDataTypeID==ap.ID}">
                 <div fxFlex fxLayoutAlign="start center">
-                  {{ap.GroupName}}
+                  {{ap.DataTypeName}}
                 </div>
               </div>
             </div>
           </div>
-          <div *ngIf="(AllGroups | filter: searchText).length === 0" class="no-results-message">
+          <div *ngIf="(AllDataTypes | filter: searchText).length === 0" class="no-results-message">
             <span class="pl-12"> No results..</span>
           </div>
         </div>
       </div>
       <div fxFlex="60">
         <form class="mat-card mat-elevation-z4 p-24 normal" autocomplete="off" fxLayout="column" fxLayoutAlign="start"
-          fxFlex="1 0 auto" name="form" [formGroup]="groupFormGroup">
+          fxFlex="1 0 auto" name="form" [formGroup]="DataTypeFormGroup">
 
-          <div class="h2 mb-24">{{SelectedGroup.GroupID?'Update':'Create'}} Group</div>
+          <div class="h2 mb-24">{{SelectedDataType.ID?'Update':'Create'}} DataType</div>
           <div fxLayout="row wrap" fxLayoutAlign="start" fxFlex="1 0 auto">
             <mat-form-field fxFlex="100">
-              <input matInput placeholder="Group Name" formControlName="GroupName">
+              <input matInput placeholder="DataType Name" formControlName="DataTypeName">
               <mat-error
-                *ngIf="groupFormGroup.get('GroupName').touched && groupFormGroup.get('GroupName').hasError('required')">
-                Group Name required</mat-error>
+                *ngIf="DataTypeFormGroup.get('DataTypeName').touched && DataTypeFormGroup.get('DataTypeName').hasError('required')">
+                DataType Name required</mat-error>
             </mat-form-field>
           </div>
           <div fxLayout="row wrap" fxLayoutAlign="end">
-            <button mat-raised-button type="button" (click)="ResetControl()" *ngIf="!SelectedGroup.GroupID"
+            <button mat-raised-button type="button" (click)="ResetControl()" *ngIf="!SelectedDataType.ID"
               style="margin-right:10px">
               Clear
             </button>
-            <button mat-raised-button color="warn" type="button" (click)="DeleteClicked()" *ngIf="SelectedGroup.GroupID"
+            <button mat-raised-button color="warn" type="button" (click)="DeleteClicked()" *ngIf="SelectedDataType.ID"
               style="margin-right:10px">
               Delete
             </button>
             <button mat-raised-button color="accent" type="button" (click)="SaveClicked()">
-              {{SelectedGroup.GroupID?'Update':'Create'}}
+              {{SelectedDataType.ID?'Update':'Create'}}
             </button>
           </div>
         </form>

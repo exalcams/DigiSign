@@ -130,9 +130,10 @@
                     <ng-container matColumnDef="DataType">
                       <th mat-header-cell *matHeaderCellDef class="boldItalicClass"> DataType </th>
                       <td mat-cell *matCellDef="let row; let index = index" [formGroupName]="index" class="pr-8">
-                        <!-- <input matInput formControlName="DataType"> -->
-                        <mat-select matInput formControlName="DataType" style="min-width: 100px;">
-                          <mat-option *ngFor="let dat of DataTypeList" [value]="dat">{{dat}}</mat-option>
+                        <mat-select matInput (selectionChange)="DataTypeChange($event,index)"
+                        formControlName="DataType" style="min-width: 100px;">
+                          <mat-option *ngFor="let dat of AllDataTypes" [value]="dat.DataTypeName">{{dat.DataTypeName}}
+                          </mat-option>
                         </mat-select>
                         <span class="pl-4 errorClass"
                           *ngIf="TemplateCreationFormGroup.get('ParameterItems').controls[index].get('DataType').touched &&
@@ -146,6 +147,16 @@
                       <th mat-header-cell *matHeaderCellDef class="boldItalicClass"> Default Value </th>
                       <td mat-cell *matCellDef="let row; let index = index" [formGroupName]="index" class="pl-8">
                         <input matInput formControlName="DefaultValue">
+                        <!-- <input
+                          *ngIf="!TemplateCreationFormGroup.get('ParameterItems').controls[index].get('DataType')?.value?.toLowerCase().includes('date')"
+                          matInput formControlName="DefaultValue">
+                        <input
+                          *ngIf="TemplateCreationFormGroup.get('ParameterItems').controls[index].get('DataType')?.value?.toLowerCase().includes('date')"
+                          matInput [matDatepicker]="picker" formControlName="DefaultValue">
+                        <mat-datepicker-toggle matSuffix [for]="picker"
+                          *ngIf="TemplateCreationFormGroup.get('ParameterItems').controls[index].get('DataType')?.value?.toLowerCase().includes('date')">
+                        </mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker> -->
                         <span class="pl-4 errorClass"
                           *ngIf="TemplateCreationFormGroup.get('ParameterItems').controls[index].get('DefaultValue').touched &&
                   TemplateCreationFormGroup.get('ParameterItems').controls[index].get('DefaultValue').hasError('required')">

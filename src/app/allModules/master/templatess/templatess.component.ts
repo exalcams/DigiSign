@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MasterService } from 'app/services/master.service';
-import { Group, AuthenticationDetails, MenuApp } from 'app/models/master';
+import { Templates, AuthenticationDetails, MenuApp } from 'app/models/master';
 import { NotificationSnackBarComponent } from 'app/notifications/notification-snack-bar/notification-snack-bar.component';
 import { Router } from '@angular/router';
 import { MatSnackBar, MatDialog, MatDialogConfig } from '@angular/material';
@@ -9,20 +9,20 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
 
 @Component({
-  selector: 'app-group',
-  templateUrl: './group.component.html',
-  styleUrls: ['./group.component.scss']
+  selector: 'app-templatess',
+  templateUrl: './templatess.component.html',
+  styleUrls: ['./templatess.component.scss']
 })
-export class GroupComponent implements OnInit {
+export class TemplateComponent implements OnInit {
   MenuItems: string[];
   authenticationDetails: AuthenticationDetails;
   notificationSnackBarComponent: NotificationSnackBarComponent;
   IsProgressBarVisibile: boolean;
-  AllGroups: Group[] = [];
-  SelectedGroup: Group;
+  AllTemplates: Templates[] = [];
+  SelectedTemplate: Templates;
   searchText = '';
-  selectGroupID = 0;
-  groupFormGroup: FormGroup;
+  selectTemplateID = 0;
+  TemplateFormGroup: FormGroup;
 
   constructor(
     private _masterService: MasterService,
@@ -34,9 +34,9 @@ export class GroupComponent implements OnInit {
     this.authenticationDetails = new AuthenticationDetails();
     this.notificationSnackBarComponent = new NotificationSnackBarComponent(this.snackBar);
     this.IsProgressBarVisibile = false;
-    this.SelectedGroup = new Group();
-    this.groupFormGroup = this._formBuilder.group({
-      GroupName: ['', Validators.required]
+    this.SelectedTemplate = new Templates();
+    this.TemplateFormGroup = this._formBuilder.group({
+      TemplateType: ['', Validators.required]
     });
   }
 
@@ -46,38 +46,38 @@ export class GroupComponent implements OnInit {
     if (retrievedObject) {
       this.authenticationDetails = JSON.parse(retrievedObject) as AuthenticationDetails;
       this.MenuItems = this.authenticationDetails.menuItemNames.split(',');
-      if (this.MenuItems.indexOf('Group') < 0) {
+      if (this.MenuItems.indexOf('Template') < 0) {
         this.notificationSnackBarComponent.openSnackBar('You do not have permission to visit this page', SnackBarStatus.danger);
         this._router.navigate(['/auth/login']);
       }
-      this.GetAllGroups();
+      this.GetAllTemplates();
     } else {
       this._router.navigate(['/auth/login']);
     }
   }
 
   ResetControl(): void {
-    this.SelectedGroup = new Group();
-    this.selectGroupID = 0;
-    this.groupFormGroup.reset();
-    Object.keys(this.groupFormGroup.controls).forEach(key => {
-      this.groupFormGroup.get(key).markAsUntouched();
+    this.SelectedTemplate = new Templates();
+    this.selectTemplateID = 0;
+    this.TemplateFormGroup.reset();
+    Object.keys(this.TemplateFormGroup.controls).forEach(key => {
+      this.TemplateFormGroup.get(key).markAsUntouched();
     });
 
   }
 
-  AddGroup(): void {
+  AddTemplate(): void {
     this.ResetControl();
   }
 
-  GetAllGroups(): void {
+  GetAllTemplates(): void {
     this.IsProgressBarVisibile = true;
-    this._masterService.GetAllGroups().subscribe(
+    this._masterService.GetAllTemplates().subscribe(
       (data) => {
         if (data) {
-          this.AllGroups = data as Group[];
-          if (this.AllGroups.length && this.AllGroups.length > 0) {
-            this.loadSelectedGroup(this.AllGroups[0]);
+          this.AllTemplates = data as Templates[];
+          if (this.AllTemplates.length && this.AllTemplates.length > 0) {
+            this.loadSelectedTemplate(this.AllTemplates[0]);
           }
           this.IsProgressBarVisibile = false;
         }
@@ -89,15 +89,15 @@ export class GroupComponent implements OnInit {
     );
   }
 
-  loadSelectedGroup(group: Group): void {
-    this.SelectedGroup = group;
-    this.selectGroupID = group.GroupID;
-    this.groupFormGroup.get('GroupName').patchValue(group.GroupName);
+  loadSelectedTemplate(template: Templates): void {
+    this.SelectedTemplate = template;
+    this.selectTemplateID = template.ID;
+    this.TemplateFormGroup.get('TemplateType').patchValue(template.TemplateType);
   }
 
   SaveClicked(): void {
-    if (this.groupFormGroup.valid) {
-      if (this.SelectedGroup.GroupID) {
+    if (this.TemplateFormGroup.valid) {
+      if (this.SelectedTemplate.ID) {
         const Actiontype = 'Update';
         this.OpenConfirmationDialog(Actiontype);
       } else {
@@ -110,8 +110,8 @@ export class GroupComponent implements OnInit {
   }
 
   DeleteClicked(): void {
-    if (this.groupFormGroup.valid) {
-      if (this.SelectedGroup.GroupID) {
+    if (this.TemplateFormGroup.valid) {
+      if (this.SelectedTemplate.ID) {
         const Actiontype = 'Delete';
         this.OpenConfirmationDialog(Actiontype);
       }
@@ -121,9 +121,9 @@ export class GroupComponent implements OnInit {
   }
 
   ShowValidationErrors(): void {
-    Object.keys(this.groupFormGroup.controls).forEach(key => {
-      this.groupFormGroup.get(key).markAsTouched();
-      this.groupFormGroup.get(key).markAsDirty();
+    Object.keys(this.TemplateFormGroup.controls).forEach(key => {
+      this.TemplateFormGroup.get(key).markAsTouched();
+      this.TemplateFormGroup.get(key).markAsDirty();
     });
   }
 
@@ -131,7 +131,7 @@ export class GroupComponent implements OnInit {
     const dialogConfig: MatDialogConfig = {
       data: {
         Actiontype: Actiontype,
-        Catagory: 'Group'
+        Catagory: 'Template'
       },
       panelClass: 'confirmation-dialog'
     };
@@ -140,25 +140,25 @@ export class GroupComponent implements OnInit {
       result => {
         if (result) {
           if (Actiontype === 'Create') {
-            this.CreateGroup();
+            this.CreateTemplate();
           } else if (Actiontype === 'Update') {
-            this.UpdateGroup();
+            this.UpdateTemplate();
           } else if (Actiontype === 'Delete') {
-            this.DeleteGroup();
+            this.DeleteTemplate();
           }
         }
       });
   }
 
-  CreateGroup(): void {
-    this.SelectedGroup.GroupName = this.groupFormGroup.get('GroupName').value;
-    this.SelectedGroup.CreatedBy = this.authenticationDetails.userID.toString();
+  CreateTemplate(): void {
+    this.SelectedTemplate.TemplateType = this.TemplateFormGroup.get('TemplateType').value;
+    this.SelectedTemplate.CreatedBy = this.authenticationDetails.userID.toString();
     this.IsProgressBarVisibile = true;
-    this._masterService.CreateGroup(this.SelectedGroup).subscribe(
+    this._masterService.CreateTemplate(this.SelectedTemplate).subscribe(
       (data) => {
         this.IsProgressBarVisibile = false;
-        this.notificationSnackBarComponent.openSnackBar('Group created successfully', SnackBarStatus.success);
-        this.GetAllGroups();
+        this.notificationSnackBarComponent.openSnackBar('Template created successfully', SnackBarStatus.success);
+        this.GetAllTemplates();
       },
       (err) => {
         console.error(err);
@@ -168,15 +168,15 @@ export class GroupComponent implements OnInit {
     );
   }
 
-  UpdateGroup(): void {
-    this.SelectedGroup.GroupName = this.groupFormGroup.get('GroupName').value;
-    this.SelectedGroup.ModifiedBy = this.authenticationDetails.userID.toString();
+  UpdateTemplate(): void {
+    this.SelectedTemplate.TemplateType = this.TemplateFormGroup.get('TemplateType').value;
+    this.SelectedTemplate.LastUpdatedBy = this.authenticationDetails.userID.toString();
     this.IsProgressBarVisibile = true;
-    this._masterService.UpdateGroup(this.SelectedGroup).subscribe(
+    this._masterService.UpdateTemplate(this.SelectedTemplate).subscribe(
       (data) => {
         this.IsProgressBarVisibile = false;
-        this.notificationSnackBarComponent.openSnackBar('Group updated successfully', SnackBarStatus.success);
-        this.GetAllGroups();
+        this.notificationSnackBarComponent.openSnackBar('Template updated successfully', SnackBarStatus.success);
+        this.GetAllTemplates();
       },
       (err) => {
         console.error(err);
@@ -186,15 +186,15 @@ export class GroupComponent implements OnInit {
     );
   }
 
-  DeleteGroup(): void {
-    this.SelectedGroup.GroupName = this.groupFormGroup.get('GroupName').value;
-    this.SelectedGroup.ModifiedBy = this.authenticationDetails.userID.toString();
+  DeleteTemplate(): void {
+    this.SelectedTemplate.TemplateType = this.TemplateFormGroup.get('TemplateType').value;
+    this.SelectedTemplate.LastUpdatedBy = this.authenticationDetails.userID.toString();
     this.IsProgressBarVisibile = true;
-    this._masterService.DeleteGroup(this.SelectedGroup).subscribe(
+    this._masterService.DeleteTemplate(this.SelectedTemplate).subscribe(
       (data) => {
         this.IsProgressBarVisibile = false;
-        this.notificationSnackBarComponent.openSnackBar('Group deleted successfully', SnackBarStatus.success);
-        this.GetAllGroups();
+        this.notificationSnackBarComponent.openSnackBar('Template deleted successfully', SnackBarStatus.success);
+        this.GetAllTemplates();
       },
       (err) => {
         console.error(err);
