@@ -14,6 +14,7 @@ import { TemplateService } from 'app/services/template.service';
 import { BehaviorSubject } from 'rxjs';
 import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
 import { MasterService } from 'app/services/master.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-template-creation',
@@ -53,6 +54,7 @@ export class TemplateCreationComponent implements OnInit {
     private _templateService: TemplateService,
     private _masterService: MasterService,
     private dialog: MatDialog,
+    private _datePipe: DatePipe
   ) {
     this.notificationSnackBarComponent = new NotificationSnackBarComponent(this.snackBar);
     this.IsProgressBarVisibile = false;
@@ -197,14 +199,13 @@ export class TemplateCreationComponent implements OnInit {
     const ParameterItemsArry = this.TemplateCreationFormGroup.get('ParameterItems') as FormArray;
     if (ParameterItemsArry.length > 0) {
       ParameterItemsArry.controls[index].get('DefaultValue').patchValue('');
-      if (event && event.value) {
-        if (event.value.toString().toLowerCase().includes('date')) {
-          // console.log(event.value);
-          ParameterItemsArry.controls[index].get('DefaultValue').disable();
-        } else {
-          ParameterItemsArry.controls[index].get('DefaultValue').enable();
-        }
-      }
+      // if (event && event.value) {
+      //   if (event.value.toString().toLowerCase().includes('date')) {
+      //     ParameterItemsArry.controls[index].get('DefaultValue').disable();
+      //   } else {
+      //     ParameterItemsArry.controls[index].get('DefaultValue').enable();
+      //   }
+      // }
     }
   }
 
@@ -332,7 +333,12 @@ export class TemplateCreationComponent implements OnInit {
       headApp.TemplateID = this.SelectedCreatedTemplate.TemplateID;
       headApp.Variable = x.get('Variable').value;
       headApp.DataType = x.get('DataType').value;
-      headApp.DefaultValue = x.get('DefaultValue').value;
+      const deV = x.get('DefaultValue').value;
+      if (deV && headApp.DataType.toLocaleLowerCase().includes('date')) {
+        headApp.DefaultValue = this._datePipe.transform(deV, 'MM-dd-yyyy');
+      } else {
+        headApp.DefaultValue = deV;
+      }
       headApp.Description = x.get('Description').value;
       headApp.CreatedBy = this.CurrentUserID.toString();
       this.TemplateParaMappingList.push(headApp);

@@ -14,6 +14,7 @@ import { BehaviorSubject } from 'rxjs';
 import { NotificationDialogComponent } from 'app/notifications/notification-dialog/notification-dialog.component';
 import { TemplateParaMapping } from 'app/models/template.model';
 import { TemplateService } from 'app/services/template.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
@@ -60,6 +61,7 @@ export class DashboardComponent implements OnInit {
     private _homeService: HomeService,
     private _templateService: TemplateService,
     private dialog: MatDialog,
+    private _datePipe: DatePipe
   ) {
     this.SelectedHead = new HeaderView();
     this.CurrentDate = new Date();
@@ -353,10 +355,21 @@ export class DashboardComponent implements OnInit {
 
   InsertTemplateParameters(params: TemplateParaMapping): void {
     // const VariableName = params.Variable;
-    const row = this._formBuilder.group({
-      VariableName: [params.DefaultValue, Validators.required],
-    });
-    this.TemplateParameterFormArray.push(row);
+    if (params.DataType.toLocaleLowerCase().includes('date')) {
+      if (params.DefaultValue) {
+        const DeV = new Date(params.DefaultValue);
+        const row = this._formBuilder.group({
+          VariableName: [DeV, Validators.required],
+        });
+        this.TemplateParameterFormArray.push(row);
+      }
+    } else {
+      const row = this._formBuilder.group({
+        VariableName: [params.DefaultValue, Validators.required],
+      });
+      this.TemplateParameterFormArray.push(row);
+    }
+
   }
 
   InsertHeaderApproverFormGroup(approver: AssignedApprover): void {
@@ -583,7 +596,12 @@ export class DashboardComponent implements OnInit {
       userTemp.DOCID = this.SelectedHead.DOCID;
       userTemp.TemplateID = this.AllTemplateParaMappings[0].TemplateID;
       userTemp.Key = this.AllTemplateParaMappings[i].Variable;
-      userTemp.Value = x.get('VariableName').value;
+      const VariableVal = x.get('VariableName').value;
+      if (VariableVal && VariableVal instanceof Date) {
+        userTemp.Value = this._datePipe.transform(VariableVal, 'MM-dd-yyyy');
+      } else {
+        userTemp.Value = VariableVal;
+      }
       userTemp.CreatedBy = this.CurrentUserID.toString();
       this.UserTemplateValueList.push(userTemp);
     });
